@@ -1,9 +1,19 @@
 import { Route, Routes } from "react-router-dom";
-import TestPage from "./Pages/TestPage";
 import Header from "./components/Header";
 import { useEffect } from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
+import { setAuth } from "./app/features/theme/authSlice";
+import { Bounce, ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import MainApp from "./Pages/MainApp";
+import Loader from "./components/Loader";
+import Profile from "./Pages/Profile";
+import { setPageRoute } from "./app/features/theme/pageRouteSlice";
 
 function App() {
+  const dispatch = useDispatch();
+  const loading = useSelector((state) => state.loading.isLoading);
   useEffect(() => {
     document.documentElement.classList.toggle(
       "dark",
@@ -11,14 +21,52 @@ function App() {
     );
   }, []);
 
+  const pageRoute = useSelector((state) => state.pageRoute.pageRoute);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      axios
+        .get("/api/user/get", { headers: { Authorization: `Bearer ${token}` } })
+        .then((res) => {
+          const userData = res.data;
+          dispatch(setAuth(userData));
+          dispatch(setPageRoute("feed"));
+        });
+    }
+  }, [pageRoute, dispatch]);
+
+  const theme = useSelector((state) => state.theme.isDarkMode)
+    ? "dark"
+    : "light";
+
   return (
     <>
-      <div className="min-h-screen flex flex-col">
+      <Loader />
+      <div
+        className={`min-h-screen flex flex-col select-none ${
+          loading ? "opacity-20" : ""
+        }`}
+      >
         <div className="bg-white text-black dark:bg-black dark:text-white flex-grow">
           <div className="max-w-[600px] m-auto min-h-screen my-5">
             <Header />
+            <ToastContainer
+              position="top-right"
+              autoClose={1000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme={theme}
+              transition:Bounce
+            />
             <Routes>
-              <Route path="/" element={<TestPage />} />
+              <Route path="/" element={<MainApp />} />
+              <Route path="/:username" element={<Profile />} />
             </Routes>
           </div>
         </div>

@@ -14,7 +14,7 @@ const PostComment = () => {
         <div className="flex flex-row align-top items-start gap-3">
           <Link to={"/"}>
             <img
-              className="border-0 rounded-full h-[50px] w-[50px] bg-cover bg-center"
+              className="border-0 rounded-full h-[45px] w-[45px] bg-cover bg-center"
               src="https://imgs.search.brave.com/o5HhnkskyqdnCfdF4gjyJ_tQeJV_MBoNDrzSluFzgdA/rs:fit:860:0:0/g:ce/aHR0cHM6Ly9zLmNh/ZmViYXphYXIuaXIv/aW1hZ2VzL2ljb25z/L2NvbS5vdXRmaXQ3/Lm1vdmluZ2V5ZS5z/d2FtcGF0dGFjay1l/M2FlOGFmOS02Mjg3/LTQ2ZjMtODYwOS00/NmM0MGI1ODMwYWFf/NTEyeDUxMi5wbmc_/eC1pbWc9djEvcmVz/aXplLGhfMjU2LHdf/MjU2LGxvc3NsZXNz/X2ZhbHNlL29wdGlt/aXpl"
               alt=""
             />
@@ -38,8 +38,10 @@ const PostComment = () => {
               setIsliking={setIsliking}
               size={25}
             />
-            <div className="flex flex-row gap-4 mt-3 font-thin text-[15px] opacity-75 items-center">
-              <p>801 likes</p>
+            <div className="flex flex-row gap-3 mt-3 font-thin md:text-[15px] text-sm opacity-75 items-center">
+              <p>801 replies</p>
+              <p>-</p>
+              <p>21 likes</p>
             </div>
           </div>
         </div>

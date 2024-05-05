@@ -128,7 +128,8 @@ const getFeed = async (req, res) => {
     const following = user.following;
     const feed = await Post.find({ postedBy: { $in: following } })
       .sort({ createdAt: -1 })
-      .populate("postedBy", "username name profilePicture");
+      .populate("postedBy", "username name profilePicture")
+      .populate("replies.repliedBy", "username name profilePicture");
     res.status(200).json(feed);
   } catch (error) {
     console.log("Error in getFeed: ", error);

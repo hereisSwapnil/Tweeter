@@ -22,8 +22,8 @@ const getUserProfile = async (req, res) => {
 
 const register = async (req, res) => {
   try {
-    const { name, email, username, password } = req.body;
-    if (!name || !email || !username || !password) {
+    const { firstName, lastName, email, username, password } = req.body;
+    if (!firstName || !email || !username || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
     const user = await User.findOne({ $or: [{ email }, { username }] });
@@ -33,7 +33,8 @@ const register = async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
     const newUser = new User({
-      name,
+      firstName,
+      lastName,
       email,
       username,
       password: hashedPassword,

@@ -1,8 +1,23 @@
 import React from "react";
 import { IoIosHeartEmpty, IoMdHeart } from "react-icons/io";
 import { BsSend } from "react-icons/bs";
+import axios from "axios";
 
-const PostAction = ({ liked, setLiked, isliking, setIsliking, size }) => {
+const PostAction = ({ liked, setLiked, isliking, setIsliking, size, id }) => {
+  const likeUnlikePost = async (id) => {
+    axios
+      .get(`/api/post/like/${id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.message === "Post liked/unliked successfully") {
+          console.log(res.data.message);
+        }
+      });
+  };
+
   return (
     <div className="mt-5 flex flex-row gap-2 align-middle items-center">
       {liked ? (
@@ -12,6 +27,7 @@ const PostAction = ({ liked, setLiked, isliking, setIsliking, size }) => {
           size={size}
           onClick={() => {
             setIsliking(true);
+            likeUnlikePost(id);
             setLiked(!liked);
             setTimeout(() => {
               setIsliking(false);
@@ -24,6 +40,7 @@ const PostAction = ({ liked, setLiked, isliking, setIsliking, size }) => {
           size={size}
           onClick={() => {
             setIsliking(true);
+            likeUnlikePost(id);
             setLiked(!liked);
             setTimeout(() => {
               setIsliking(false);
