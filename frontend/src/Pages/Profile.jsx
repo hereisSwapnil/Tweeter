@@ -5,25 +5,57 @@ import { setLoading } from "../app/features/theme/loadingSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
 import UserDetailedPost from "../components/UserDetailedPost";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Profile = () => {
+  const { username } = useParams();
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const [userProfile, setUserProfile] = useState(null);
+  const [userPosts, setUserPosts] = useState([]);
+  const [userReplies, setUserReplies] = useState([]);
 
   useEffect(() => {
-    if (user) {
-      dispatch(setLoading(true));
+    dispatch(setLoading(true));
+    axios
+      .get(`/api/user/${username}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        setUserProfile(res.data);
+        console.log(res.data);
+      })
+      .catch((err) => {
+        console.log(err);
+        toast.error(err.response?.data?.message || "An error occurred.");
+        navigate("/");
+      });
+  }, [dispatch, user]);
+
+  useEffect(() => {
+    if (userProfile) {
       axios
-        .get(`/api/user/${user.username}`)
-        .then((res) => {
-          setUserProfile(res.data);
-          console.log(res.data);
+        .get(`api/post/user/${userProfile?._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         })
-        .catch((err) => {
-          console.log(err);
-          toast.error(err.response?.data?.message || "An error occurred.");
+        .then((res) => {
+          setUserPosts(res.data);
+          console.log(res.data);
+        });
+      axios
+        .get(`api/post/user/replies/${userProfile?._id}`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((res) => {
+          setUserReplies(res.data);
         })
         .finally(() => {
           setTimeout(() => {
@@ -31,12 +63,25 @@ const Profile = () => {
           }, 1000);
         });
     }
-  }, [dispatch, user]);
+  }, [userProfile]);
 
   return (
     <div>
       <UserHeader userProfile={userProfile} />
-      <UserDetailedPost />
+      {userProfile && (
+        <div className="flex flex-col gap-4">
+          {userPosts.map((post, index) => (
+            <UserDetailedPost
+              key={index}
+              post={post}
+              userProfile={userProfile}
+            />
+          ))}
+          {/* {userReplies.map((post, index) => (
+            <UserDetailedPost key={index} post={post} />
+          ))} */}
+        </div>
+      )}
     </div>
   );
 };

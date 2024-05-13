@@ -7,6 +7,8 @@ const {
   likeUnlikePost,
   replyPost,
   getFeed,
+  getPostsByUser,
+  getRepliesByUser,
 } = require("../controllers/post.controller");
 const router = Router();
 
@@ -21,5 +23,9 @@ router.get("/like/:id", protectRoute, likeUnlikePost);
 router.post("/reply/:id", protectRoute, replyPost);
 
 router.get("/feed/:id", protectRoute, getFeed);
+
+router.get("/user/:id", protectRoute, getPostsByUser);
+
+router.get("/user/replies/:id", protectRoute, getRepliesByUser);
 
 module.exports = router;

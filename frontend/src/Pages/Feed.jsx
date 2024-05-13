@@ -5,13 +5,15 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { setLoading } from "../app/features/theme/loadingSlice";
 import UserPost from "../components/UserPost";
+import ReplyPopup from "../components/ReplyPopup";
 
 const Feed = () => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const token = localStorage.getItem("token");
-
+  const [isReplying, setIsReplying] = useState(false);
   const [feedPost, setFeedPost] = useState([]);
+  const [replyPost, setReplyPost] = useState(null);
 
   useEffect(() => {
     if (user) {
@@ -31,17 +33,24 @@ const Feed = () => {
           toast.error(err.response?.data?.message || "An error occurred.");
         })
         .finally(() => {
-          setTimeout(() => {
             dispatch(setLoading(false));
-          }, 1000);
         });
     }
-  }, [dispatch, user]);
+  }, [dispatch, user, isReplying]);
 
   return (
     <div>
+      {isReplying && (
+        <ReplyPopup post={replyPost} setIsReplying={setIsReplying} />
+      )}
       {feedPost.map((post, index) => (
-        <UserPost key={index} post={post} />
+        <UserPost
+          key={index}
+          post={post}
+          setIsReplying={setIsReplying}
+          setReplyPost={setReplyPost}
+          isReplying={isReplying}
+        />
       ))}
     </div>
   );

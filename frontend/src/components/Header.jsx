@@ -1,14 +1,14 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toggleTheme } from "../app/features/theme/themeSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { setPageRoute } from "../app/features/theme/pageRouteSlice";
 import { toast } from "react-toastify";
 import { setAuth } from "../app/features/theme/authSlice";
 
 const Header = () => {
   const dispatch = useDispatch();
-
+  const navigate = useNavigate();
   const user = useSelector((state) => state.auth.user);
 
   const handleToggle = () => {
@@ -20,7 +20,7 @@ const Header = () => {
     <div className="lg:w-[600px] w-[90vw] m-auto items-center flex flex-row justify-between">
       <p></p>
       <img
-        className="h-[30px] absolute right-[46vw] lg:right-[46vw]"
+        className="h-[30px] absolute right-[46vw] lg:right-[48vw]"
         src={
           !isDarkMode ? "src/assets/DarkLogo.svg" : "src/assets/LightLogo.svg"
         }
@@ -33,9 +33,10 @@ const Header = () => {
             className="dark:bg-[#ffffff1c] md:text-md text-sm bg-[#0000001c] hover:bg-[#00000030] dark:hover:bg-[#ffffff30] px-3 py-2 rounded-lg cursor-pointer"
             onClick={() => {
               localStorage.removeItem("token");
-              toast.success("Logged out successfully!");
-              dispatch(setAuth(null));
               dispatch(setPageRoute("login"));
+              navigate("/login");
+              dispatch(setAuth(null));
+              toast.success("Logged out successfully!");
             }}
           >
             Logout

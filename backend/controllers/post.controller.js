@@ -1,6 +1,5 @@
 const Post = require("../models/post.model");
 const User = require("../models/user.model");
-const { getUserProfile } = require("./user.controller");
 
 const createPost = async (req, res) => {
   try {
@@ -31,7 +30,9 @@ const createPost = async (req, res) => {
 const getPost = async (req, res) => {
   try {
     const { id } = req.params;
-    const post = await Post.findById(id).populate("postedBy", "username name");
+    const post = await Post.findById(id)
+      .populate("postedBy", "username name profilePicture")
+      .populate("replies.repliedBy", "profilePicture username");
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -137,6 +138,46 @@ const getFeed = async (req, res) => {
   }
 };
 
+const getPostsByUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const posts = await Post.find({ postedBy: id })
+      .sort({ createdAt: -1 })
+      .populate("postedBy", "username name profilePicture")
+      .populate("replies.repliedBy", "profilePicture username");
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.log("Error in getPostsByUser: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getRepliesByUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const posts = await Post.find({ "replies.repliedBy": id })
+      .sort({ createdAt: -1 })
+      .populate("postedBy", "username name profilePicture")
+      .populate("replies.repliedBy", "profilePicture");
+
+    res.status(200).json(posts);
+  } catch (error) {
+    console.log("Error in getPostsByUser: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 module.exports = {
   createPost,
   getPost,
@@ -144,4 +185,6 @@ module.exports = {
   likeUnlikePost,
   replyPost,
   getFeed,
+  getPostsByUser,
+  getRepliesByUser,
 };

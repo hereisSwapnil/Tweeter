@@ -7,7 +7,7 @@ const getUserProfile = async (req, res) => {
     const { username } = req.params;
     console.log(username);
     const user = await User.findOne({ username }).select(
-      "-password -email -__v -updatedAt -_id"
+      "-password -email -__v -updatedAt"
     );
     if (user) {
       res.status(200).json(user);

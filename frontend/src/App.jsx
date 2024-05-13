@@ -10,6 +10,7 @@ import MainApp from "./Pages/MainApp";
 import Loader from "./components/Loader";
 import Profile from "./Pages/Profile";
 import { setPageRoute } from "./app/features/theme/pageRouteSlice";
+import Post from "./Pages/Post";
 
 function App() {
   const dispatch = useDispatch();
@@ -67,6 +68,7 @@ function App() {
             <Routes>
               <Route path="/" element={<MainApp />} />
               <Route path="/:username" element={<Profile />} />
+              <Route path="/:username/:postID" element={<Post />} />
             </Routes>
           </div>
         </div>

@@ -3,7 +3,15 @@ import { IoIosHeartEmpty, IoMdHeart } from "react-icons/io";
 import { BsSend } from "react-icons/bs";
 import axios from "axios";
 
-const PostAction = ({ liked, setLiked, isliking, setIsliking, size, id }) => {
+const PostAction = ({
+  liked,
+  setLiked,
+  isliking,
+  setIsliking,
+  size,
+  id,
+  clickReply,
+}) => {
   const likeUnlikePost = async (id) => {
     axios
       .get(`/api/post/like/${id}`, {
@@ -54,6 +62,7 @@ const PostAction = ({ liked, setLiked, isliking, setIsliking, size, id }) => {
         viewBox="0 0 32 32"
         id="comment"
         height={size + 2}
+        onClick={clickReply}
       >
         <path
           fill=""
@@ -71,6 +80,7 @@ const PostAction = ({ liked, setLiked, isliking, setIsliking, size, id }) => {
         viewBox="0 0 32 32"
         id="comment"
         height={size + 2}
+        onClick={clickReply}
       >
         <path
           fill="#fff"
