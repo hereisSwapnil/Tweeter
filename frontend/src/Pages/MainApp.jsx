@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import Feed from "./Feed";
-import { setLoading } from "../app/features/theme/loadingSlice";
 import Login from "./Login";
 import Signup from "./Signup";
-import { setPageRoute } from "../app/features/theme/pageRouteSlice";
+import { setPageRoute } from "../app/features/pageRouteSlice";
 
 const MainApp = () => {
   const user = useSelector((state) => state.auth.user);

@@ -1,4 +1,5 @@
 const Post = require("../models/post.model");
+const Reply = require("../models/reply.model");
 const User = require("../models/user.model");
 
 const createPost = async (req, res) => {
@@ -12,11 +13,11 @@ const createPost = async (req, res) => {
     if (!content && !image) {
       return res.status(400).json({ message: "Content or image is required" });
     }
-    content_ = content ? content : "";
-    image_ = image ? image : "";
+    const content_ = content ? content : "";
+    // const image_ = req.file.path;
     const newPost = new Post({
       content: content_,
-      image: image_,
+      image: image,
       postedBy: _id,
     });
     await newPost.save();
@@ -32,7 +33,15 @@ const getPost = async (req, res) => {
     const { id } = req.params;
     const post = await Post.findById(id)
       .populate("postedBy", "username name profilePicture")
-      .populate("replies.repliedBy", "profilePicture username");
+      .populate("replies")
+      .populate({
+        path: "replies",
+        populate: {
+          path: "repliedBy",
+          select: "username name profilePicture",
+        },
+      });
+
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
@@ -100,13 +109,12 @@ const replyPost = async (req, res) => {
     if (!content) {
       return res.status(400).json({ message: "Text is required" });
     }
-    const newReply = {
-      username: user.username,
-      UserProfileImage: user.profilePicture,
+    const newReply = new Reply({
       content,
       repliedBy: _id,
-    };
+    });
     post.replies.push(newReply);
+    await newReply.save();
     await post.save();
     res.status(200).json({ message: "Reply posted successfully" });
   } catch (error) {
@@ -130,7 +138,13 @@ const getFeed = async (req, res) => {
     const feed = await Post.find({ postedBy: { $in: following } })
       .sort({ createdAt: -1 })
       .populate("postedBy", "username name profilePicture")
-      .populate("replies.repliedBy", "username name profilePicture");
+      .populate({
+        path: "replies",
+        populate: {
+          path: "repliedBy",
+          select: "username name profilePicture",
+        },
+      });
     res.status(200).json(feed);
   } catch (error) {
     console.log("Error in getFeed: ", error);
@@ -145,11 +159,16 @@ const getPostsByUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-
     const posts = await Post.find({ postedBy: id })
       .sort({ createdAt: -1 })
       .populate("postedBy", "username name profilePicture")
-      .populate("replies.repliedBy", "profilePicture username");
+      .populate({
+        path: "replies",
+        populate: {
+          path: "repliedBy",
+          select: "username name profilePicture",
+        },
+      });
 
     res.status(200).json(posts);
   } catch (error) {
@@ -165,15 +184,94 @@ const getRepliesByUser = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+    console.log(id);
+    console.log(".............");
+    const posts = await Post.find({}).populate("replies");
+    const posts_ = posts.filter((post) => {
+      return post.replies.filter((reply) => reply.repliedBy.toString() === id);
+    });
 
-    const posts = await Post.find({ "replies.repliedBy": id })
-      .sort({ createdAt: -1 })
-      .populate("postedBy", "username name profilePicture")
-      .populate("replies.repliedBy", "profilePicture");
-
-    res.status(200).json(posts);
+    // .sort({ createdAt: -1 })
+    // .populate("postedBy", "username name profilePicture")
+    // .populate("replies.repliedBy", "profilePicture");
+    // console.log(posts_);
+    res.status(200).json(posts_);
   } catch (error) {
     console.log("Error in getPostsByUser: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const likeUnlikeReply = async (req, res) => {
+  try {
+    const { replyId } = req.params;
+    const reply = await Reply.findById(replyId);
+    if (!reply) {
+      return res.status(404).json({ message: "Reply not found" });
+    }
+    const { _id } = req.user;
+    if (reply.likes.includes(_id)) {
+      reply.likes = reply.likes.filter(
+        (like) => like.toString() !== _id.toString()
+      );
+    } else {
+      reply.likes.push(_id);
+    }
+    await reply.save();
+    res.status(200).json({ message: "Reply liked/unliked successfully" });
+  } catch (error) {
+    console.log("Error in likeUnlikeReply: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const replyOnaReply = async (req, res) => {
+  try {
+    const { content } = req.body;
+    const { replyId } = req.params;
+
+    const reply = await Reply.findById(replyId).populate("replies");
+
+    if (!reply) {
+      return res.status(404).json({ message: "Reply not found" });
+    }
+
+    if (!content) {
+      return res.status(400).json({ message: "Content is required" });
+    }
+
+    const newReply = new Reply({
+      content,
+      repliedBy: req.user._id,
+    });
+
+    reply.replies.push(newReply);
+    await newReply.save();
+    await reply.save();
+
+    res.status(200).json({ message: "Reply posted successfully" });
+  } catch (error) {
+    console.error("Error in replyOnaReply: ", error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+const getRepliesOfaReply = async (req, res) => {
+  try {
+    const { replyId } = req.params;
+    const reply = await Reply.findById(replyId).populate({
+      path: "replies",
+      populate: {
+        path: "repliedBy",
+        select: "username name profilePicture",
+      },
+    });
+    if (!reply) {
+      return res.status(404).json({ message: "Reply not found" });
+    }
+    res.status(200).json(reply.replies);
+  } catch (error) {
+    console.error("Error in getRepliesOfaReply: ", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
@@ -187,4 +285,7 @@ module.exports = {
   getFeed,
   getPostsByUser,
   getRepliesByUser,
+  likeUnlikeReply,
+  replyOnaReply,
+  getRepliesOfaReply,
 };

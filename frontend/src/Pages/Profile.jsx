@@ -1,17 +1,22 @@
 import React, { useEffect, useState } from "react";
 import UserHeader from "../components/UserHeader";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../app/features/theme/loadingSlice";
+import { setLoading } from "../app/features/loadingSlice";
 import { toast } from "react-toastify";
 import axios from "axios";
 import UserDetailedPost from "../components/UserDetailedPost";
 import { useNavigate, useParams } from "react-router-dom";
+import ReplyPopup from "../components/ReplyPopup";
+import RecommendationBar from "../components/RecommendationBar";
+import Sidebar from "../components/Sidebar";
 
 const Profile = () => {
   const { username } = useParams();
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isReplying } = useSelector((state) => state.reply);
+  console.log(isReplying);
 
   const [userProfile, setUserProfile] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
@@ -67,6 +72,8 @@ const Profile = () => {
 
   return (
     <div>
+      <Sidebar />
+      {isReplying && <ReplyPopup />}
       <UserHeader userProfile={userProfile} />
       {userProfile && (
         <div className="flex flex-col gap-4">
@@ -82,6 +89,7 @@ const Profile = () => {
           ))} */}
         </div>
       )}
+      <RecommendationBar />
     </div>
   );
 };

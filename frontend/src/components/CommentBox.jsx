@@ -1,11 +1,19 @@
 import axios from "axios";
 import React from "react";
 import { useForm } from "react-hook-form";
-import { useDispatch } from "react-redux";
-import { setLoading } from "../app/features/theme/loadingSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "../app/features/loadingSlice";
 import { toast } from "react-toastify";
+import {
+  setIsReplying,
+  setReplyPost,
+  setReplyReply,
+} from "../app/features/replySlice";
 
-const CommentBox = ({ placeholder, postID, setIsReplying }) => {
+const CommentBox = ({ placeholder, postID, replyID }) => {
+  console.log(placeholder);
+  console.log(postID);
+  console.log(replyID);
   const {
     register,
     handleSubmit,
@@ -15,7 +23,9 @@ const CommentBox = ({ placeholder, postID, setIsReplying }) => {
 
   const dispatch = useDispatch();
 
-  const reply = (data) => {
+  const { replyPost, replyReply } = useSelector((state) => state.reply);
+
+  const replyaPost = (data) => {
     dispatch(setLoading(true));
     axios
       .post(`/api/post/reply/${postID}`, data, {
@@ -27,7 +37,66 @@ const CommentBox = ({ placeholder, postID, setIsReplying }) => {
         console.log(res.data);
         if (res.data.message === "Reply posted successfully") {
           reset();
-          setIsReplying(false);
+          dispatch(setIsReplying(false));
+          dispatch(setReplyPost(null));
+          toast.success("Replied successfully");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log(err.response?.data?.message || "An error occurred.");
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
+  };
+
+  const replyaReply = (data) => {
+    // console.log(data);
+    // console.log(replyReply._id);
+    // console.log(postID);
+    dispatch(setLoading(true));
+    axios
+      .post(`/api/post/reply/reply/${replyID}`, data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.message === "Reply posted successfully") {
+          reset();
+          dispatch(setIsReplying(false));
+          dispatch(setReplyReply(null));
+          toast.success("Replied successfully");
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        console.log(err.response?.data?.message || "An error occurred.");
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
+      });
+  };
+
+  const handleDirectReply = (data) => {
+    console.log(data);
+    // console.log(replyReply._id);
+    console.log(postID);
+    dispatch(setLoading(true));
+    axios
+      .post(`/api/post/reply/${postID}`, data, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      })
+      .then((res) => {
+        console.log(res.data);
+        if (res.data.message === "Reply posted successfully") {
+          reset();
+          dispatch(setIsReplying(false));
+          dispatch(setReplyReply(null));
           toast.success("Replied successfully");
         }
       })
@@ -42,7 +111,13 @@ const CommentBox = ({ placeholder, postID, setIsReplying }) => {
 
   return (
     <form
-      onSubmit={handleSubmit(reply)}
+      onSubmit={
+        replyPost
+          ? handleSubmit(replyaPost)
+          : replyReply
+          ? handleSubmit(replyaReply)
+          : handleSubmit(handleDirectReply)
+      }
       className="flex flex-row py-3 border-b-[1px] border-t-[1px] gap-4 justify-between md:text-md text-sm dark:border-b-[#ffffff2a] border-b-[#0000002a] dark:border-t-[#ffffff2a] border-t-[#0000002a] align-middle items-center"
     >
       <div className="flex flex-row w-full gap-4">

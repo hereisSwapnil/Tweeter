@@ -3,22 +3,26 @@ import { MdVerified } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
 import PostAction from "./PostAction";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { convertPostDate } from "../utils/convertPostDate";
 import copy from "copy-to-clipboard";
+import { setIsReplying, setReplyPost } from "../app/features/replySlice";
 
-const UserPost = ({ post, setIsReplying, setReplyPost, isReplying }) => {
+const UserPost = ({ post, isCommentVisible }) => {
   const user = useSelector((state) => state.auth.user);
+  const dispatch = useDispatch();
 
   const [liked, setLiked] = useState(post.likes.includes(user._id));
   const [isliking, setIsliking] = useState(false);
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  const clickReply = () => {
-    setReplyPost(post);
-    setIsReplying(!isReplying);
+  const clickReplyPost = () => {
+    dispatch(setReplyPost(post));
+    dispatch(setIsReplying(true));
   };
+
+  console.log(post);
 
   return (
     <div className="flex flex-row mt-[20px] border-b-[1px] pb-12 dark:border-b-[#ffffff2a] border-b-[#0000002a] w-[95vw] md:w-auto">
@@ -101,7 +105,7 @@ const UserPost = ({ post, setIsReplying, setReplyPost, isReplying }) => {
         <Link to={`/${post.postedBy.username}/${post._id}`}>
           <p className="mt-2 font-light text-sm">{post.content}</p>
           <img
-            className="border-0 rounded-lg w-full bg-cover bg-center mt-2"
+            className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2"
             src={post.image}
             alt=""
           />
@@ -114,7 +118,9 @@ const UserPost = ({ post, setIsReplying, setReplyPost, isReplying }) => {
             isliking={isliking}
             setIsliking={setIsliking}
             size={35}
-            clickReply={clickReply}
+            clickReplyPost={clickReplyPost}
+            isCommentVisible={isCommentVisible}
+            isPost={true}
           />
         </div>
         <div className="md:hidden flex">
@@ -125,7 +131,9 @@ const UserPost = ({ post, setIsReplying, setReplyPost, isReplying }) => {
             isliking={isliking}
             setIsliking={setIsliking}
             size={30}
-            clickReply={clickReply}
+            clickReplyPost={clickReplyPost}
+            isCommentVisible={isCommentVisible}
+            isPost={true}
           />
         </div>
         <div className="flex flex-row mt-3 font-thin text-[15px] opacity-75 items-start">

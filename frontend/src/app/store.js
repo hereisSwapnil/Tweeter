@@ -1,8 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
-import themeSlice from "./features/theme/themeSlice";
-import authSlice from "./features/theme/authSlice";
-import loadingSlice from "./features/theme/loadingSlice";
-import pageRouteSlice from "./features/theme/pageRouteSlice";
+import themeSlice from "./features/themeSlice";
+import authSlice from "./features/authSlice";
+import loadingSlice from "./features/loadingSlice";
+import pageRouteSlice from "./features/pageRouteSlice";
+import replySlice from "./features/replySlice";
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,6 @@ export const store = configureStore({
     auth: authSlice,
     loading: loadingSlice,
     pageRoute: pageRouteSlice,
+    reply: replySlice,
   },
 });

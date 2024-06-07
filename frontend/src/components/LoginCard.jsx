@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
-import { setPageRoute } from "../app/features/theme/pageRouteSlice";
-import { setLoading } from "../app/features/theme/loadingSlice";
+import { setPageRoute } from "../app/features/pageRouteSlice";
+import { setLoading } from "../app/features/loadingSlice";
 
 const LoginCard = () => {
   const [toggleType, setToggleType] = useState("password");

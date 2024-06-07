@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import PostAction from "./PostAction";
 import PostComment from "./PostComment";
 import { useDispatch, useSelector } from "react-redux";
-import { setLoading } from "../app/features/theme/loadingSlice";
+import { setLoading } from "../app/features/loadingSlice";
 import copy from "copy-to-clipboard";
 import { convertPostDate } from "../utils/convertPostDate";
 import CommentBox from "./CommentBox";
@@ -20,9 +20,12 @@ const UserDetailedPost = ({ key, post, userProfile }) => {
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
+  console.log(post);
+
   useEffect(() => {
     if (post) {
       dispatch(setLoading(true));
+      console.log(userProfile);
       if (userProfile) {
         post.replies = post?.replies.filter(
           (reply) => reply?.repliedBy._id == userProfile?._id
@@ -36,13 +39,13 @@ const UserDetailedPost = ({ key, post, userProfile }) => {
   }, [post]);
 
   return (
-    <div className="flex flex-col w-[95vw] md:w-auto mx-auto mb-10" key={key}>
+    <div className="flex flex-col w-[95vw] md:w-full mx-auto mb-10" key={key}>
       <div className="border-b-[1px] pb-8 dark:border-b-[#ffffff2a] border-b-[#0000002a]">
         <div className="flex flex-row align-middle justify-between mt-10 items-center">
           <div className="flex flex-row align-middle items-center gap-3">
             <Link to={`/${post.postedBy.username}`}>
               <img
-                className="border-0 rounded-full h-[45px] w-[45px] md:h-[45px] md:w-[45px] bg-cover bg-center"
+                className="border-0 rounded-full h-[45px] w-[45px] md:h-auto md:w-[45px] bg-cover bg-center"
                 src={post.postedBy.profilePicture}
                 alt=""
               />
@@ -92,7 +95,7 @@ const UserDetailedPost = ({ key, post, userProfile }) => {
         </Link>
         <Link to={`/${post.postedBy.username}/${post._id}`}>
           <img
-            className="border-0 rounded-lg w-full bg-cover bg-center mt-2"
+            className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2"
             src={post?.image}
             alt=""
           />
@@ -104,6 +107,9 @@ const UserDetailedPost = ({ key, post, userProfile }) => {
             isliking={isliking}
             setIsliking={setIsliking}
             size={35}
+            id={post._id}
+            isCommentVisible={false}
+            isPost={true}
           />
         </div>
         <div className="md:hidden flex">
@@ -114,6 +120,8 @@ const UserDetailedPost = ({ key, post, userProfile }) => {
             setIsliking={setIsliking}
             size={30}
             id={post._id}
+            isCommentVisible={false}
+            isPost={true}
           />
         </div>
         <div className="flex flex-row mt-3 font-thin text-[15px] opacity-75 items-start">
@@ -132,14 +140,10 @@ const UserDetailedPost = ({ key, post, userProfile }) => {
           </p>
         </div>
       </div>
-      <CommentBox
-        placeholder="Send a reply..."
-        postID={post?._id}
-        setIsReplying={() => {}}
-      />
+      <CommentBox placeholder="Send a reply..." postID={post?._id} />
       <br />
       {userReplies.map((reply) => (
-        <PostComment key={reply._id} reply={reply} />
+        <PostComment reply={reply} />
       ))}
       {/* <CommentBox placeholder="Get the app or click here to download" /> */}
       {/* {post?.replies?.} */}

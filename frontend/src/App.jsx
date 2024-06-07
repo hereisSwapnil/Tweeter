@@ -3,14 +3,15 @@ import Header from "./components/Header";
 import { useEffect } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
-import { setAuth } from "./app/features/theme/authSlice";
+import { setAuth } from "./app/features/authSlice";
 import { Bounce, ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import MainApp from "./Pages/MainApp";
 import Loader from "./components/Loader";
 import Profile from "./Pages/Profile";
-import { setPageRoute } from "./app/features/theme/pageRouteSlice";
+import { setPageRoute } from "./app/features/pageRouteSlice";
 import Post from "./Pages/Post";
+import Notifications from "./Pages/Notifications";
 
 function App() {
   const dispatch = useDispatch();
@@ -69,6 +70,7 @@ function App() {
               <Route path="/" element={<MainApp />} />
               <Route path="/:username" element={<Profile />} />
               <Route path="/:username/:postID" element={<Post />} />
+              <Route path="/notifications" element={<Notifications />} />
             </Routes>
           </div>
         </div>

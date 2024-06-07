@@ -9,10 +9,23 @@ const {
   getFeed,
   getPostsByUser,
   getRepliesByUser,
+  likeUnlikeReply,
+  replyOnaReply,
+  getRepliesOfaReply,
 } = require("../controllers/post.controller");
+const upload = require("../utils/multer");
 const router = Router();
 
-router.post("/", protectRoute, createPost);
+router.post(
+  "/",
+  protectRoute,
+  upload.single("image"),
+  (req, res, next) => {
+    console.log("OKOKOK");
+    next();
+  },
+  createPost
+);
 
 router.get("/:id", protectRoute, getPost);
 
@@ -27,5 +40,11 @@ router.get("/feed/:id", protectRoute, getFeed);
 router.get("/user/:id", protectRoute, getPostsByUser);
 
 router.get("/user/replies/:id", protectRoute, getRepliesByUser);
+
+router.get("/reply/like/:replyId", protectRoute, likeUnlikeReply);
+
+router.post("/reply/reply/:replyId", protectRoute, replyOnaReply);
+
+router.get("/reply/replies/:replyId", protectRoute, getRepliesOfaReply);
 
 module.exports = router;
