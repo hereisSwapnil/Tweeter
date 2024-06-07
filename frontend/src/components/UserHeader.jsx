@@ -16,7 +16,7 @@ const UserHeader = ({ userProfile }) => {
   const followUnfollowUser = (userID) => {
     axios
       .post(
-        `/api/user/follow-unfollow/${userID}`,
+        `${import.meta.env.VITE_API_URL}/api/user/follow-unfollow/${userID}`,
         {},
         {
           headers: {

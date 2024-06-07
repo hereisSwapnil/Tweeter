@@ -40,8 +40,8 @@ const PostAction = ({
 
     setIsLiking(true);
     const url = isReply
-      ? `/api/post/reply/like/${replyId}`
-      : `/api/post/like/${id}`;
+      ? `${import.meta.env.VITE_API_URL}/api/post/reply/like/${replyId}`
+      : `${import.meta.env.VITE_API_URL}/api/post/like/${id}`;
     likeUnlike(url);
     setLiked(!liked);
     setTimeout(() => {

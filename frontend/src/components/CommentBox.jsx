@@ -28,7 +28,7 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
   const replyaPost = (data) => {
     dispatch(setLoading(true));
     axios
-      .post(`/api/post/reply/${postID}`, data, {
+      .post(`${import.meta.env.VITE_API_URL}/api/post/reply/${postID}`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
@@ -57,11 +57,15 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
     // console.log(postID);
     dispatch(setLoading(true));
     axios
-      .post(`/api/post/reply/reply/${replyID}`, data, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
+      .post(
+        `${import.meta.env.VITE_API_URL}/api/post/reply/reply/${replyID}`,
+        data,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
       .then((res) => {
         console.log(res.data);
         if (res.data.message === "Reply posted successfully") {
@@ -86,7 +90,7 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
     console.log(postID);
     dispatch(setLoading(true));
     axios
-      .post(`/api/post/reply/${postID}`, data, {
+      .post(`${import.meta.env.VITE_API_URL}/api/post/reply/${postID}`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

@@ -27,7 +27,9 @@ const PostComment = ({ reply, post, username }) => {
 
   const fetchReplies = async () => {
     try {
-      const response = await axios.get(`/api/post/reply/replies/${reply?._id}`);
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/api/post/reply/replies/${reply?._id}`
+      );
       console.log(response);
       setReplies(response.data);
       setShowReplies(true);

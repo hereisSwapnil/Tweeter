@@ -18,12 +18,11 @@ const Feed = () => {
   const [feedPost, setFeedPost] = useState([]);
 
   const { isReplying } = useSelector((state) => state.reply);
-
   useEffect(() => {
     if (user) {
       dispatch(setLoading(true));
       axios
-        .get(`/api/post/feed/${user._id}`, {
+        .get(`${import.meta.env.VITE_API_URL}/api/post/feed/${user._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },

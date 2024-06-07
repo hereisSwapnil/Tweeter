@@ -26,7 +26,7 @@ const Post = () => {
   useEffect(() => {
     dispatch(setLoading(true));
     axios
-      .get(`/api/post/${postID}`, {
+      .get(`${import.meta.env.VITE_API_URL}/api/post/${postID}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

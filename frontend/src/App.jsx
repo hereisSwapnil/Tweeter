@@ -29,7 +29,9 @@ function App() {
     const token = localStorage.getItem("token");
     if (token) {
       axios
-        .get("/api/user/get", { headers: { Authorization: `Bearer ${token}` } })
+        .get(`${import.meta.env.VITE_API_URL}/api/user/get`, {
+          headers: { Authorization: `Bearer ${token}` },
+        })
         .then((res) => {
           const userData = res.data;
           dispatch(setAuth(userData));

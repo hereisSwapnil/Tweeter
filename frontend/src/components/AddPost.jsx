@@ -31,7 +31,7 @@ const AddPost = () => {
     console.log(data);
     dispatch(setLoading(true));
     axios
-      .post("/api/post", data, {
+      .post(`${import.meta.env.VITE_API_URL}/api/post`, data, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

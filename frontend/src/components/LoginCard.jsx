@@ -27,7 +27,7 @@ const LoginCard = () => {
 
   const onSubmit = (data) => {
     axios
-      .post("/api/user/login", data, {
+      .post(`${import.meta.env.VITE_API_URL}/api/user/login`, data, {
         headers: {
           "Content-Type": "application/json",
         },

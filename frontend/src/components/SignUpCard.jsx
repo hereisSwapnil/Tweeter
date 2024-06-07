@@ -28,7 +28,7 @@ const SignUpCard = () => {
 
   const onSubmit = (data) => {
     axios
-      .post("/api/user/register", data, {
+      .post(`${import.meta.env.VITE_API_URL}/api/user/register`, data, {
         headers: {
           "Content-Type": "application/json",
         },

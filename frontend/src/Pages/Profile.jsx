@@ -25,7 +25,7 @@ const Profile = () => {
   useEffect(() => {
     dispatch(setLoading(true));
     axios
-      .get(`/api/user/${username}`, {
+      .get(`${import.meta.env.VITE_API_URL}/api/user/${username}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
         },

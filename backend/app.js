@@ -4,7 +4,7 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const methodOverride = require("method-override");
 
-cors({ origin: "http://localhost:3000", credentials: true });
+app.use(cors({ origin: process.env.ORIGIN, credentials: true }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
