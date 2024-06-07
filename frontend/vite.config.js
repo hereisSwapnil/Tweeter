@@ -1,5 +1,7 @@
-import { defineConfig } from "vite";
+import { defineConfig, loadEnv } from "vite";
 import react from "@vitejs/plugin-react";
+
+const { VITE_API_URL } = loadEnv("", process.cwd());
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,7 +9,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://192.168.1.48:8000",
+        target: VITE_API_URL,
         changeOrigin: true,
         pathRewrite: (path) => path.replace(/^\/api/, ""),
       },
