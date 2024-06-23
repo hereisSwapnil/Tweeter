@@ -33,11 +33,6 @@ const PostAction = ({
   };
 
   const handleLikeUnlike = () => {
-    if (typeof setIsLiking !== "function") {
-      console.error("setIsLiking is not a function");
-      return;
-    }
-
     setIsLiking(true);
     const url = isReply
       ? `${import.meta.env.VITE_API_URL}/api/post/reply/like/${replyId}`

@@ -43,7 +43,7 @@ const ReplyPopup = () => {
                 alt=""
               />
             </Link>
-            <div className="border-[1px] h-full border-black dark:border-white"></div>
+            <div className="border-[1px] h-full border-black dark:border-white opacity-25"></div>
             {replyPost?.replies?.length > 2 ? (
               <div to={"/"} className="flex gap-2">
                 <img

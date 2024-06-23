@@ -16,16 +16,7 @@ const {
 const upload = require("../utils/multer");
 const router = Router();
 
-router.post(
-  "/",
-  protectRoute,
-  upload.single("image"),
-  (req, res, next) => {
-    console.log("OKOKOK");
-    next();
-  },
-  createPost
-);
+router.post("/", protectRoute, upload.single("image"), createPost);
 
 router.get("/:id", protectRoute, getPost);
 

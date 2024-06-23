@@ -4,7 +4,7 @@ const User = require("../models/user.model");
 
 const createPost = async (req, res) => {
   try {
-    const { content, image } = req.body;
+    const { content } = req.body;
     const { _id } = req.user;
     const user = await User.findById(_id);
     if (!user) {
@@ -14,10 +14,10 @@ const createPost = async (req, res) => {
       return res.status(400).json({ message: "Content or image is required" });
     }
     const content_ = content ? content : "";
-    // const image_ = req.file.path;
+    const image_ = req.file.path;
     const newPost = new Post({
       content: content_,
-      image: image,
+      image: image_,
       postedBy: _id,
     });
     await newPost.save();
@@ -135,7 +135,7 @@ const getFeed = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
     const following = user.following;
-    const feed = await Post.find({ postedBy: { $in: following } })
+    let feed = await Post.find({ postedBy: { $in: following } })
       .sort({ createdAt: -1 })
       .populate("postedBy", "username name profilePicture")
       .populate({
@@ -145,6 +145,18 @@ const getFeed = async (req, res) => {
           select: "username name profilePicture",
         },
       });
+    if (feed.length === 0) {
+      feed = await Post.find({ postedBy: _id })
+        .sort({ createdAt: -1 })
+        .populate("postedBy", "username name profilePicture")
+        .populate({
+          path: "replies",
+          populate: {
+            path: "repliedBy",
+            select: "username name profilePicture",
+          },
+        });
+    }
     res.status(200).json(feed);
   } catch (error) {
     console.log("Error in getFeed: ", error);

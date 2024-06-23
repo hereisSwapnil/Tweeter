@@ -2,11 +2,9 @@ import React, { useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { MdVerified } from "react-icons/md";
 import { Link } from "react-router-dom";
-import CommentBox from "./CommentBox";
 import { useDispatch, useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { CiImageOn } from "react-icons/ci";
-import { ImCross } from "react-icons/im";
 import { setLoading } from "../app/features/loadingSlice";
 import axios from "axios";
 
@@ -25,15 +23,22 @@ const AddPost = () => {
   const [image, setImage] = useState(null);
 
   const post = (data) => {
-    console.log(data);
-
-    // data = { ...data, image };
-    console.log(data);
     dispatch(setLoading(true));
+
+    const formData = new FormData();
+    formData.append("content", data.content);
+
+    if (image) {
+      formData.append("image", image);
+    }
+
+    console.log(formData);
+
     axios
-      .post(`${import.meta.env.VITE_API_URL}/api/post`, data, {
+      .post(`${import.meta.env.VITE_API_URL}/api/post`, formData, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem("token")}`,
+          "Content-Type": "multipart/form-data",
         },
       })
       .then((res) => {
@@ -41,11 +46,16 @@ const AddPost = () => {
         if (res.data.message === "Post created successfully") {
           reset();
           setImage(null);
+          setImagePath(null);
         }
+      })
+      .catch((error) => {
+        console.error("Error uploading post:", error);
+      })
+      .finally(() => {
+        dispatch(setLoading(false));
       });
   };
-
-  // const uploadImage = () => {};
 
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -53,14 +63,11 @@ const AddPost = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        console.log(reader.result);
         setImagePath(reader.result);
       };
       reader.readAsDataURL(file);
     }
   };
-
-  // console.log(watch().image);
 
   return (
     <div className="bg-white dark:bg-black h-fit !opacity-100 z-10 flex flex-row mt-0 p-3 rounded-lg pt-7 pb-10 px-5">
@@ -120,9 +127,7 @@ const AddPost = () => {
           id="imageInput"
           accept="image/*"
           className="hidden"
-          multiple={false}
-          // onChange={(e) => handleImageUpload(e)}
-          {...register("image", { required: "Image is required" })}
+          onChange={handleImageUpload}
         />
         <form
           onSubmit={handleSubmit(post)}

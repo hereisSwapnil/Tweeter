@@ -6,7 +6,7 @@ const RecommendationBar = () => {
   return (
     <div
       style={{ right: `calc((100vw - 1200px) / 2)` }}
-      className="text-white flex-col justify-between h-[90vh] fixed w-[250px] top-[8vh] hidden md:flex"
+      className="dark:text-white text-black flex-col justify-between h-[90vh] fixed w-[250px] top-[8vh] hidden md:flex"
     >
       <div className="flex flex-col">
         <div className="flex flex-row gap-4 items-center align-middle py-3 cursor-pointer">

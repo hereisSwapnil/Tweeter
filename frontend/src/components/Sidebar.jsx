@@ -12,7 +12,7 @@ const Sidebar = () => {
   return (
     <div
       style={{ left: `calc((100vw - 1100px) / 2)` }}
-      className="text-white flex-col justify-between h-[90vh] fixed w-[200px] top-[8vh] hidden md:flex"
+      className="dark:text-white text-black flex-col justify-between h-[90vh] fixed w-[200px] top-[8vh] hidden md:flex"
     >
       <div className="flex flex-col gap-4">
         <div

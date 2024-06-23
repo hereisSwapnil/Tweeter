@@ -38,7 +38,7 @@ const UserPost = ({ post, isCommentVisible }) => {
             alt=""
           />
         </Link>
-        <div className="border-[1px] h-full border-black dark:border-white"></div>
+        <div className="border-[1px] h-full border-black dark:border-white opacity-25"></div>
         {post?.replies?.length > 2 ? (
           <Link to={`/${post.postedBy.username}`} className="flex gap-2">
             <img
@@ -105,7 +105,7 @@ const UserPost = ({ post, isCommentVisible }) => {
         <Link to={`/${post.postedBy.username}/${post._id}`}>
           <p className="mt-2 font-light text-sm">{post.content}</p>
           <img
-            className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2"
+            className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2 object-cover"
             src={post.image}
             alt=""
           />

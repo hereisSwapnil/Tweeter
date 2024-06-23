@@ -16,7 +16,7 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isReplying } = useSelector((state) => state.reply);
-  console.log(isReplying);
+  // console.log(isReplying);
 
   const [userProfile, setUserProfile] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
@@ -32,10 +32,10 @@ const Profile = () => {
       })
       .then((res) => {
         setUserProfile(res.data);
-        console.log(res.data);
+        // console.log(res.data);
       })
       .catch((err) => {
-        console.log(err);
+        // console.log(err);
         toast.error(err.response?.data?.message || "An error occurred.");
         navigate("/");
       });
@@ -43,15 +43,20 @@ const Profile = () => {
 
   useEffect(() => {
     if (userProfile) {
+      console.log(userProfile);
       axios
-        .get(`api/post/user/${userProfile?._id}`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        })
+        .get(
+          `${import.meta.env.VITE_API_URL}/api/post/user/${userProfile?._id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
         .then((res) => {
-          setUserPosts(res.data);
           console.log(res.data);
+          setUserPosts(res.data);
+          // console.log(res.data);
         });
       axios
         .get(`api/post/user/replies/${userProfile?._id}`, {
@@ -77,7 +82,7 @@ const Profile = () => {
       <UserHeader userProfile={userProfile} />
       {userProfile && (
         <div className="flex flex-col gap-4">
-          {userPosts.map((post, index) => (
+          {userPosts?.map((post, index) => (
             <UserDetailedPost
               key={index}
               post={post}

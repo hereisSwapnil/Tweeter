@@ -28,7 +28,12 @@ const PostComment = ({ reply, post, username }) => {
   const fetchReplies = async () => {
     try {
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/post/reply/replies/${reply?._id}`
+        `${import.meta.env.VITE_API_URL}/api/post/reply/replies/${reply?._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
       );
       console.log(response);
       setReplies(response.data);
