@@ -28,7 +28,7 @@ router.post("/reply/:id", protectRoute, replyPost);
 
 router.get("/feed/:id", protectRoute, getFeed);
 
-router.get("/user/:id", protectRoute, getPostsByUser);
+router.get("/user/:id", getPostsByUser);
 
 router.get("/user/replies/:id", protectRoute, getRepliesByUser);
 

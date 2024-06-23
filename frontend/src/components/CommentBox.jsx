@@ -11,9 +11,7 @@ import {
 } from "../app/features/replySlice";
 
 const CommentBox = ({ placeholder, postID, replyID }) => {
-  console.log(placeholder);
-  console.log(postID);
-  console.log(replyID);
+  const user = useSelector((state) => state.auth.user);
   const {
     register,
     handleSubmit,
@@ -26,6 +24,10 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
   const { replyPost, replyReply } = useSelector((state) => state.reply);
 
   const replyaPost = (data) => {
+    if (!user) {
+      toast.error("Please login to reply");
+      return;
+    }
     dispatch(setLoading(true));
     axios
       .post(`${import.meta.env.VITE_API_URL}/api/post/reply/${postID}`, data, {
@@ -52,9 +54,10 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
   };
 
   const replyaReply = (data) => {
-    // console.log(data);
-    // console.log(replyReply._id);
-    // console.log(postID);
+    if (!user) {
+      toast.error("Please login to reply");
+      return;
+    }
     dispatch(setLoading(true));
     axios
       .post(
@@ -85,9 +88,10 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
   };
 
   const handleDirectReply = (data) => {
-    console.log(data);
-    // console.log(replyReply._id);
-    console.log(postID);
+    if (!user) {
+      toast.error("Please login to reply");
+      return;
+    }
     dispatch(setLoading(true));
     axios
       .post(`${import.meta.env.VITE_API_URL}/api/post/reply/${postID}`, data, {

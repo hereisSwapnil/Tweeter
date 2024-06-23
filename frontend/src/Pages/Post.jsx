@@ -16,10 +16,6 @@ const Post = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isReplying } = useSelector((state) => state.reply);
-  console.log(isReplying);
-  // const [userProfile, setUserProfile] = useState(null);
-  // const [userPosts, setUserPosts] = useState([]);
-  // const [userReplies, setUserReplies] = useState([]);
 
   const [post, setPost] = useState(null);
 
@@ -42,56 +38,12 @@ const Post = () => {
       });
   }, []);
 
-  // useEffect(() => {
-  //   if (userProfile) {
-  //     axios
-  //       .get(`api/post/user/${userProfile?._id}`, {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //         },
-  //       })
-  //       .then((res) => {
-  //         setUserPosts(res.data);
-  //         console.log(res.data);
-  //       });
-  //     axios
-  //       .get(`api/post/user/replies/${userProfile?._id}`, {
-  //         headers: {
-  //           Authorization: `Bearer ${localStorage.getItem("token")}`,
-  //         },
-  //       })
-  //       .then((res) => {
-  //         setUserReplies(res.data);
-  //       })
-  //       .finally(() => {
-  //         setTimeout(() => {
-  //           dispatch(setLoading(false));
-  //         }, 1000);
-  //       });
-  //   }
-  // }, [userProfile]);
-
   return (
     <div>
-      <Sidebar />
+      {user && <Sidebar />}
       {isReplying && <ReplyPopup />}
       {post && <UserDetailedPost post={post} />}
-      {/* <UserHeader userProfile={userProfile} /> */}
-      {/* {userProfile && (
-        <div className="flex flex-col gap-4">
-          {userPosts.map((post, index) => (
-            <UserDetailedPost
-              key={index}
-              post={post}
-              userProfile={userProfile}
-            />
-          ))} */}
-      {/* {userReplies.map((post, index) => (
-            <UserDetailedPost key={index} post={post} />
-          ))} */}
-      {/* </div> */}
-      {/* )} */}
-      <RecommendationBar />
+      {user && <RecommendationBar />}
     </div>
   );
 };

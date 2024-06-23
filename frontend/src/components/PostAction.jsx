@@ -2,6 +2,8 @@ import React from "react";
 import { IoIosHeartEmpty, IoMdHeart } from "react-icons/io";
 import { BsSend } from "react-icons/bs";
 import axios from "axios";
+import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const PostAction = ({
   liked,
@@ -17,6 +19,7 @@ const PostAction = ({
   isReply,
   ReplyaReply,
 }) => {
+  const user = useSelector((state) => state.auth.user);
   const likeUnlike = async (url) => {
     try {
       const response = await axios.get(url, {
@@ -33,6 +36,10 @@ const PostAction = ({
   };
 
   const handleLikeUnlike = () => {
+    if (!user) {
+      toast.error("Please login to like/unlike a post.");
+      return;
+    }
     setIsLiking(true);
     const url = isReply
       ? `${import.meta.env.VITE_API_URL}/api/post/reply/like/${replyId}`

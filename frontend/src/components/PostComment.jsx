@@ -20,7 +20,6 @@ const PostComment = ({ reply, post, username }) => {
   const [showReplies, setShowReplies] = useState(false);
 
   const ReplyaReply = () => {
-    console.log("done");
     dispatch(setIsReplying(true));
     dispatch(setReplyReply(reply));
   };

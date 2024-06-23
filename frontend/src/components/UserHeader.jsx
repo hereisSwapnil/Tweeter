@@ -50,21 +50,23 @@ const UserHeader = ({ userProfile }) => {
           <p className="font-light opacity-80 md:text-md text-sm">
             @{userProfile?.username}
           </p>
-          <div
-            className={`md:text-md mt-10 text-sm select-none ${
-              userProfile?._id === user?._id ? "hidden" : ""
-            }
+          {user && (
+            <div
+              className={`md:text-md mt-10 text-sm select-none ${
+                userProfile?._id === user?._id ? "hidden" : ""
+              }
         cursor-pointer dark:hover:bg-gray-950 text-center dark:hover:border-gray-800 bg-[#e3e3e3] hover:bg-[#cfcfcf] h-fit w-[100px] dark:bg-gray-900 dark:border-gray-700 border-[1px] px-[8px] py-[8px] md:px-[8px] md:py-[8px] rounded-lg`}
-            onClick={() => {
-              followUnfollowUser(userProfile?._id);
-            }}
-          >
-            {followUnfollowBtnVal !== null
-              ? followUnfollowBtnVal
-              : userProfile?.followers.includes(user?._id)
-              ? "Unfollow"
-              : "Follow"}
-          </div>
+              onClick={() => {
+                followUnfollowUser(userProfile?._id);
+              }}
+            >
+              {followUnfollowBtnVal !== null
+                ? followUnfollowBtnVal
+                : userProfile?.followers.includes(user?._id)
+                ? "Unfollow"
+                : "Follow"}
+            </div>
+          )}
         </div>
         <img
           className="border-0 rounded-full md:h-[100px] md:w-[100px] h-[80px] w-[80px] bg-cover bg-center"

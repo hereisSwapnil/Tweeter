@@ -14,14 +14,14 @@ const UserDetailedPost = ({ post, userProfile }) => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
 
-  const [liked, setLiked] = useState(post.likes.includes(user._id));
+  const [liked, setLiked] = useState(post.likes.includes(user?._id));
   const [isLiking, setIsLiking] = useState(false);
   const [userReplies, setUserReplies] = useState([]);
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
-    if (post) {
+    if (user && post) {
       dispatch(setLoading(true));
       if (userProfile) {
         post.replies = post.replies.filter(
@@ -133,11 +133,12 @@ const UserDetailedPost = ({ post, userProfile }) => {
           )}
         </div>
       </div>
-      <CommentBox placeholder="Send a reply..." postID={post._id} />
+      {user && <CommentBox placeholder="Send a reply..." postID={post._id} />}
       <br />
-      {userReplies.map((reply) => (
-        <PostComment key={reply._id} reply={reply} />
-      ))}
+      {user &&
+        userReplies.map((reply) => (
+          <PostComment key={reply._id} reply={reply} />
+        ))}
     </div>
   );
 };
