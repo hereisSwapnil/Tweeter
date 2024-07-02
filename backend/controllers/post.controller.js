@@ -2,6 +2,21 @@ const Post = require("../models/post.model");
 const Reply = require("../models/reply.model");
 const User = require("../models/user.model");
 
+// {
+//   fieldname: 'image',
+//   originalname: 'Screenshot from 2024-06-28 13-48-54.png',
+//   encoding: '7bit',
+//   mimetype: 'image/png',
+//   path: 'https://res.cloudinary.com/dfvl2bpwy/image/upload/v1719899126/Tweeter/bher70zu0kbqr1ccnydz.png',
+//   size: 186576,
+//   filename: 'Tweeter/bher70zu0kbqr1ccnydz'
+// }
+const cloudinary = require("cloudinary").v2;
+// console.log(req.file);
+// await cloudinary.uploader
+//   .destroy("Tweeter/bher70zu0kbqr1ccnydz")
+//   .then((result) => console.log(result));
+
 const createPost = async (req, res) => {
   try {
     const { content } = req.body;
@@ -10,16 +25,25 @@ const createPost = async (req, res) => {
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    if (!content && !image) {
-      return res.status(400).json({ message: "Content or image is required" });
+
+    if (!content && !req.files.length) {
+      return res
+        .status(400)
+        .json({ message: "Content or images are required" });
     }
+
     const content_ = content ? content : "";
-    const image_ = req.file.path;
+    const images_ = req.files.map((file) => ({
+      url: file.path,
+      filepath: file.filename,
+    }));
+
     const newPost = new Post({
       content: content_,
-      image: image_,
+      images: images_,
       postedBy: _id,
     });
+
     await newPost.save();
     res.status(200).json({ newPost, message: "Post created successfully" });
   } catch (error) {

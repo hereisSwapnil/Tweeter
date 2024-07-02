@@ -69,6 +69,7 @@ const Sidebar = () => {
               </div>
             </div>
             <CiLogout
+              className="cursor-pointer"
               size={25}
               onClick={() => {
                 localStorage.clear();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MdVerified } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { BsThreeDots } from "react-icons/bs";
@@ -13,7 +13,7 @@ const UserPost = ({ post, isCommentVisible }) => {
   const dispatch = useDispatch();
 
   const [liked, setLiked] = useState(post.likes.includes(user._id));
-  const [isliking, setIsliking] = useState(false);
+  const [isLiking, setIsLiking] = useState(false);
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
@@ -22,7 +22,35 @@ const UserPost = ({ post, isCommentVisible }) => {
     dispatch(setIsReplying(true));
   };
 
-  console.log(post);
+  const renderImages = () => {
+    const displayedImages = post.images.slice(0, 4);
+    const extraImagesCount = post.images.length - 4;
+
+    return (
+      <div className="grid grid-cols-2 gap-2 mt-2">
+        {displayedImages.map((image, index) => (
+          <div key={index} className="relative w-full mb-2">
+            <img
+              src={image.url}
+              alt={`Uploaded ${index}`}
+              className={`border-0 rounded-lg cursor-pointer w-full h-[200px] object-cover ${
+                extraImagesCount > 0 && index == displayedImages.length - 1
+                  ? "opacity-20"
+                  : ""
+              }`}
+            />
+            {extraImagesCount > 0 && index == displayedImages.length - 1 && (
+              <div className="absolute top-[50%] right-[50%] z-10">
+                <span className="text-lg font-bold text-white z-30">
+                  +{extraImagesCount}
+                </span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   return (
     <div className="flex flex-row mt-[20px] border-b-[1px] pb-12 dark:border-b-[#ffffff2a] border-b-[#0000002a] w-[95vw] md:w-auto">
@@ -74,17 +102,13 @@ const UserPost = ({ post, isCommentVisible }) => {
           <div className="flex relative flex-row gap-4 mt-3 font-thin text-[15px] items-center">
             <p className="opacity-75">{convertPostDate(post.createdAt)}</p>
             <BsThreeDots
-              className="relative flex opacity-75"
-              onClick={() => {
-                setIsShareMenuOpen(!isShareMenuOpen);
-              }}
+              className="relative flex opacity-75 cursor-pointer"
+              onClick={() => setIsShareMenuOpen(!isShareMenuOpen)}
             />
             <div
               onClick={() => {
-                console.log("copying");
                 copy(
-                  window.location.origin +
-                    `/${post.postedBy.username}/${post._id}`
+                  `${window.location.origin}/${post.postedBy.username}/${post._id}`
                 );
                 setIsCopied(true);
                 setTimeout(() => {
@@ -104,19 +128,15 @@ const UserPost = ({ post, isCommentVisible }) => {
         </div>
         <Link to={`/${post.postedBy.username}/${post._id}`}>
           <p className="mt-2 font-light text-sm">{post.content}</p>
-          <img
-            className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2 object-cover"
-            src={post.image}
-            alt=""
-          />
+          {post.images.length > 0 ? renderImages() : null}
         </Link>
         <div className="hidden md:flex">
           <PostAction
             id={post._id}
             liked={liked}
             setLiked={setLiked}
-            isliking={isliking}
-            setIsliking={setIsliking}
+            isLiking={isLiking}
+            setIsLiking={setIsLiking}
             size={35}
             clickReplyPost={clickReplyPost}
             isCommentVisible={isCommentVisible}
@@ -128,8 +148,8 @@ const UserPost = ({ post, isCommentVisible }) => {
             id={post._id}
             liked={liked}
             setLiked={setLiked}
-            isliking={isliking}
-            setIsliking={setIsliking}
+            isLiking={isLiking}
+            setIsLiking={setIsLiking}
             size={30}
             clickReplyPost={clickReplyPost}
             isCommentVisible={isCommentVisible}

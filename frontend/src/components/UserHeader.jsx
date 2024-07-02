@@ -4,8 +4,14 @@ import { Link, useNavigate } from "react-router-dom";
 import copy from "copy-to-clipboard";
 import { useSelector } from "react-redux";
 import axios from "axios";
+import { IoSettingsOutline } from "react-icons/io5";
 
-const UserHeader = ({ userProfile }) => {
+const UserHeader = ({
+  userProfile,
+  setIsSettingsOpen,
+  setIsUserListOpen,
+  setUserType,
+}) => {
   const navigate = useNavigate();
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
@@ -81,32 +87,48 @@ const UserHeader = ({ userProfile }) => {
       </p>
       <div className="flex flex-row justify-between">
         <div className="flex flex-row gap-4">
-          <p className="font-semibold opacity-50 md:text-md text-sm cursor-pointer hover:text-gray-500">
+          <p
+            className="font-semibold opacity-50 md:text-md text-sm cursor-pointer hover:text-gray-500"
+            onClick={() => {
+              setIsUserListOpen(true);
+              setUserType("followers");
+            }}
+          >
             {userProfile?.followers.length} followers
           </p>
-          <p className="font-semibold opacity-50 md:text-md text-sm cursor-pointer hover:text-gray-500">
+          <p
+            className="font-semibold opacity-50 md:text-md text-sm cursor-pointer hover:text-gray-500"
+            onClick={() => {
+              setIsUserListOpen(true);
+              setUserType("following");
+            }}
+          >
             {userProfile?.following.length} following
           </p>
         </div>
         <div className="flex flex-row gap-1">
-          <Link to={"/"}>
-            <PiInstagramLogoLight
-              size={30}
-              cursor={"pointer"}
-              onClick={() => {
-                navigate("/");
-              }}
-              className="hidden md:flex"
-            />
-            <PiInstagramLogoLight
-              size={25}
-              cursor={"pointer"}
-              onClick={() => {
-                navigate("/");
-              }}
-              className="md:hidden flex"
-            />
-          </Link>
+          {userProfile?._id === user?._id ? (
+            <div>
+              <IoSettingsOutline
+                size={30}
+                cursor={"pointer"}
+                onClick={() => {
+                  setIsSettingsOpen(true);
+                }}
+                className="hidden md:flex"
+              />
+              <IoSettingsOutline
+                size={25}
+                cursor={"pointer"}
+                onClick={() => {
+                  setIsSettingsOpen(true);
+                }}
+                className="md:hidden flex"
+              />
+            </div>
+          ) : (
+            ""
+          )}
           <div className="relative">
             <PiDotsThreeCircle
               size={30}

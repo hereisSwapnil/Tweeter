@@ -9,10 +9,13 @@ import { setLoading } from "../app/features/loadingSlice";
 import copy from "copy-to-clipboard";
 import { convertPostDate } from "../utils/convertPostDate";
 import CommentBox from "./CommentBox";
+import { Gallery, Item } from "react-photoswipe-gallery";
+import "photoswipe/dist/photoswipe.css";
 
 const UserDetailedPost = ({ post, userProfile }) => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
+  const [viewingImages, setViewingImages] = useState(false);
 
   const [liked, setLiked] = useState(post.likes.includes(user?._id));
   const [isLiking, setIsLiking] = useState(false);
@@ -42,6 +45,63 @@ const UserDetailedPost = ({ post, userProfile }) => {
       setIsShareMenuOpen(false);
       setIsCopied(false);
     }, 1000);
+  };
+
+  const renderImages = () => {
+    const displayedImages = post.images.slice(0, 4);
+    const extraImagesCount = post.images.length - 4;
+
+    return (
+      <Gallery id="my-gallery">
+        <div className="relative grid grid-cols-2 gap-2">
+          {post.images.map((image, index) => (
+            <div
+              key={index}
+              className="relative flex items-center justify-center align-middle"
+            >
+              <Item
+                original={image.url}
+                thumbnail={image.url}
+                key={index}
+                className={`border-0 cursor-pointer rounded-lg object-cover w-auto h-full ${
+                  extraImagesCount > 0 && index == displayedImages.length - 1
+                    ? "opacity-20"
+                    : ""
+                }`}
+                width={"auto"}
+                height={"auto"}
+                style={{
+                  width: "100%", // Adjust as needed
+                  height: "auto", // Adjust as needed
+                }}
+              >
+                {({ ref, open }) => (
+                  <img
+                    ref={ref}
+                    onClick={open}
+                    src={image.url}
+                    alt=""
+                    className={`border-0 cursor-pointer rounded-lg w-full h-[200px] object-cover ${
+                      extraImagesCount > 0 &&
+                      index == displayedImages.length - 1
+                        ? "opacity-20"
+                        : ""
+                    } ${index < 4 ? "flex" : "hidden"}`}
+                  />
+                )}
+              </Item>
+              {extraImagesCount > 0 && index == displayedImages.length - 1 && (
+                <div className="absolute top-[50%] right-[50%] z-10">
+                  <span className="text-lg font-bold text-white z-30">
+                    +{extraImagesCount}
+                  </span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </Gallery>
+    );
   };
 
   return (
@@ -84,15 +144,9 @@ const UserDetailedPost = ({ post, userProfile }) => {
           </div>
         </div>
         <Link to={`/${post.postedBy.username}/${post._id}`}>
-          <p className="mt-2 font-light text-sm">{post.content}</p>
+          <p className="mt-2 font-light text-sm mb-2">{post.content}</p>
         </Link>
-        <Link to={`/${post.postedBy.username}/${post._id}`}>
-          <img
-            className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2 object-cover"
-            src={post?.image}
-            alt=""
-          />
-        </Link>
+        {post.images.length > 0 ? renderImages() : null}
         <div className="hidden md:flex">
           <PostAction
             liked={liked}

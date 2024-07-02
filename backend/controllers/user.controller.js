@@ -7,7 +7,7 @@ const getUserProfile = async (req, res) => {
     const { username } = req.params;
     console.log(username);
     const user = await User.findOne({ username }).select(
-      "-password -email -__v -updatedAt"
+      "-password -__v -updatedAt"
     );
     if (user) {
       res.status(200).json(user);
@@ -145,7 +145,7 @@ const followUnfollowUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   try {
-    const { name, email, username, profilePicture, bio } = req.body;
+    const { name, email, username, bio } = req.body;
     const userId = req.user._id;
     const user = await User.findById(userId);
     if (!user) {
@@ -154,12 +154,52 @@ const updateUser = async (req, res) => {
     if (name) user.name = name;
     if (email) user.email = email;
     if (username) user.username = username;
-    if (profilePicture) user.profilePicture = profilePicture;
+    if (req.file) user.profilePicture = req.file.path;
     if (bio) user.bio = bio;
     await user.save();
     res.status(200).json({ message: "User updated" });
   } catch (error) {
     console.error(`Error during update user: ${error.message}`);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getUserFollowers = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (id != req.user._id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const user = await User.findById(id).populate(
+      "followers",
+      "-password -__v -updatedAt -email -bio -followers -following -createdAt -firstName -lastName"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user.followers);
+  } catch (error) {
+    console.error(`Error during get user followers: ${error.message}`);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+const getUserFollowing = async (req, res) => {
+  try {
+    const { id } = req.params;
+    if (id != req.user._id) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+    const user = await User.findById(id).populate(
+      "following",
+      "-password -__v -updatedAt -email -bio -followers -following -createdAt -firstName -lastName"
+    );
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    res.status(200).json(user.following);
+  } catch (error) {
+    console.error(`Error during get user following: ${error.message}`);
     res.status(500).json({ message: error.message });
   }
 };
@@ -172,4 +212,6 @@ module.exports = {
   followUnfollowUser,
   updateUser,
   getUserProfile,
+  getUserFollowers,
+  getUserFollowing,
 };

@@ -68,22 +68,22 @@ const ReplyPopup = () => {
           </div>
           <div className="w-full">
             <div className="flex flex-row justify-between align-middle items-center mb-5">
-              <Link to={`/${replyPost?.postedBy.username}`}>
+              <div>
                 <img
                   className="border-0 rounded-full h-[35px] md:hidden w-[35px] md:h-[45px] md:w-[45px] bg-cover bg-center"
                   src={replyPost?.postedBy.profilePicture}
                   alt=""
                 />
                 <div>
-                  <p className="flex flex-row items-center gap-1 font-extrabold cursor-pointer hover:underline">
+                  <div className="flex flex-row items-center gap-1 font-extrabold cursor-pointer hover:underline">
                     <Link to={`/${replyPost?.postedBy.username}`}>
                       {replyPost?.postedBy.username}
                     </Link>
                     <span>
                       <MdVerified color="#0096FF" />
                     </span>
-                  </p>
-                  <p className="text-xs md:text-sm">
+                  </div>
+                  <div className="text-xs md:text-sm">
                     Replying to{" "}
                     <Link
                       to={`/${replyPost?.postedBy.username}`}
@@ -91,9 +91,9 @@ const ReplyPopup = () => {
                     >
                       @{replyPost?.postedBy.username}
                     </Link>
-                  </p>
+                  </div>
                 </div>
-              </Link>
+              </div>
 
               <div className="flex flex-row gap-4 mt-3 font-thin text-[15px] opacity-75 items-center">
                 <p>1d</p>

@@ -9,6 +9,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import ReplyPopup from "../components/ReplyPopup";
 import RecommendationBar from "../components/RecommendationBar";
 import Sidebar from "../components/Sidebar";
+import ProfileSetting from "../components/ProfileSetting";
+import UserListPopup from "../components/UserListPopup";
 
 const Profile = () => {
   const { username } = useParams();
@@ -16,7 +18,9 @@ const Profile = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isReplying } = useSelector((state) => state.reply);
-  // console.log(isReplying);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isUserListOpen, setIsUserListOpen] = useState(false);
+  const [userType, setUserType] = useState(null);
 
   const [userProfile, setUserProfile] = useState(null);
   const [userPosts, setUserPosts] = useState([]);
@@ -75,11 +79,35 @@ const Profile = () => {
     }
   }, [userProfile]);
 
+  if (isSettingsOpen) {
+    return (
+      <div>
+        <Sidebar />
+        <ProfileSetting
+          userProfile={userProfile}
+          setIsSettingsOpen={setIsSettingsOpen}
+        />
+        <RecommendationBar />
+      </div>
+    );
+  }
+
   return (
     <div>
       <Sidebar />
       {isReplying && <ReplyPopup />}
-      <UserHeader userProfile={userProfile} />
+      {isUserListOpen && (
+        <UserListPopup
+          setIsUserListOpen={setIsUserListOpen}
+          userType={userType}
+        />
+      )}
+      <UserHeader
+        userProfile={userProfile}
+        setIsSettingsOpen={setIsSettingsOpen}
+        setIsUserListOpen={setIsUserListOpen}
+        setUserType={setUserType}
+      />
       {userProfile && (
         <div className="flex flex-col gap-4">
           {userPosts?.map((post, index) => (

@@ -23,7 +23,7 @@ const Header = () => {
           !isDarkMode ? "src/assets/DarkLogo.svg" : "src/assets/LightLogo.svg"
         }
         alt=""
-        onClick={handleToggle}
+        // onClick={handleToggle}
       />
       {user ? (
         <div className="flex flex-row md:hidden gap-3 align-middle items-center">

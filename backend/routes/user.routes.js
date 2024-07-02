@@ -7,8 +7,11 @@ const {
   followUnfollowUser,
   updateUser,
   getUserProfile,
+  getUserFollowers,
+  getUserFollowing,
 } = require("../controllers/user.controller");
 const protectRoute = require("../middlewares/protectRoute");
+const upload = require("../utils/multer");
 
 const router = Router();
 
@@ -22,8 +25,12 @@ router.get("/logout", logout);
 
 router.post("/follow-unfollow/:id", protectRoute, followUnfollowUser);
 
-router.post("/update", protectRoute, updateUser);
+router.post("/update", upload.single("image"), protectRoute, updateUser);
 
 router.get("/:username", getUserProfile);
+
+router.get("/followers/:id", protectRoute, getUserFollowers);
+
+router.get("/following/:id", protectRoute, getUserFollowing);
 
 module.exports = router;
