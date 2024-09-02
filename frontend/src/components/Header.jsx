@@ -19,9 +19,7 @@ const Header = () => {
       <p className="md:hidden"></p>
       <img
         className="h-[30px] absolute right-[46vw] lg:right-[48vw]"
-        src={
-          !isDarkMode ? "src/assets/DarkLogo.svg" : "src/assets/LightLogo.svg"
-        }
+        src={!isDarkMode ? "DarkLogo.svg" : "LightLogo.svg"}
         alt=""
         // onClick={handleToggle}
       />
