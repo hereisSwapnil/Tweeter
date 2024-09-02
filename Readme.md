@@ -4,7 +4,7 @@ A social media platform where users can connect through posts with functionaliti
 
 ## Live Demo 🔴
 
-[Visit Tweeter here](https://tweeter-app.vercel.app/)
+[Visit Tweeter here](https://tweeter-six-alpha.vercel.app/)
 
 ## Features
 
