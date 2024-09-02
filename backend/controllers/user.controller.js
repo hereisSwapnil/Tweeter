@@ -1,6 +1,7 @@
 const User = require("../models/user.model");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const { Mongoose, default: mongoose } = require("mongoose");
 
 const getUserProfile = async (req, res) => {
   try {
@@ -120,21 +121,32 @@ const followUnfollowUser = async (req, res) => {
     if (!userToFollow || !currentUser) {
       return res.status(404).json({ message: "User not found" });
     }
+
     if (currentUser.following.includes(id)) {
+      // Unfollow
       await currentUser.updateOne({ $pull: { following: id } });
       await userToFollow.updateOne({
-        $pull: {
-          followers: currentUser._id,
-        },
+        $pull: { followers: currentUser._id },
       });
       return res.status(201).json({ message: "User unfollowed" });
     } else {
+      // Follow
       await currentUser.updateOne({ $push: { following: id } });
       await userToFollow.updateOne({
+        $push: { followers: currentUser._id },
+      });
+
+      // Add notification
+      await User.findByIdAndUpdate(id, {
         $push: {
-          followers: currentUser._id,
+          notifications: {
+            type: "follow",
+            userId: currentUser._id,
+            createdAt: new Date(),
+          },
         },
       });
+
       return res.status(201).json({ message: "User followed" });
     }
   } catch (error) {

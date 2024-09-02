@@ -2,21 +2,6 @@ const Post = require("../models/post.model");
 const Reply = require("../models/reply.model");
 const User = require("../models/user.model");
 
-// {
-//   fieldname: 'image',
-//   originalname: 'Screenshot from 2024-06-28 13-48-54.png',
-//   encoding: '7bit',
-//   mimetype: 'image/png',
-//   path: 'https://res.cloudinary.com/dfvl2bpwy/image/upload/v1719899126/Tweeter/bher70zu0kbqr1ccnydz.png',
-//   size: 186576,
-//   filename: 'Tweeter/bher70zu0kbqr1ccnydz'
-// }
-const cloudinary = require("cloudinary").v2;
-// console.log(req.file);
-// await cloudinary.uploader
-//   .destroy("Tweeter/bher70zu0kbqr1ccnydz")
-//   .then((result) => console.log(result));
-
 const createPost = async (req, res) => {
   try {
     const { content } = req.body;
@@ -69,6 +54,10 @@ const getPost = async (req, res) => {
     if (!post) {
       return res.status(404).json({ message: "Post not found" });
     }
+
+    post.views += 1;
+    await post.save();
+
     res.status(200).json(post);
   } catch (error) {
     console.log("Error in getPost: ", error);
@@ -106,8 +95,30 @@ const likeUnlikePost = async (req, res) => {
       post.likes = post.likes.filter(
         (like) => like.toString() !== _id.toString()
       );
+      post.uniqueEngagements = post.uniqueEngagements.filter(
+        (engagement) =>
+          !(
+            engagement.userId.toString() === _id.toString() &&
+            engagement.engagementType === "like"
+          )
+      );
     } else {
       post.likes.push(_id);
+      if (post.postedBy.toString() !== _id.toString()) {
+        await User.findByIdAndUpdate(post.postedBy, {
+          $push: {
+            notifications: {
+              type: "like",
+              postId: post._id,
+              userId: _id,
+            },
+          },
+        });
+      }
+      post.uniqueEngagements.push({
+        userId: _id,
+        engagementType: "like",
+      });
     }
     await post.save();
     res.status(200).json({ message: "Post liked/unliked successfully" });
@@ -138,6 +149,24 @@ const replyPost = async (req, res) => {
       repliedBy: _id,
     });
     post.replies.push(newReply);
+
+    post.uniqueEngagements.push({
+      userId: _id,
+      engagementType: "reply",
+    });
+
+    if (post.postedBy.toString() !== _id.toString()) {
+      await User.findByIdAndUpdate(post.postedBy, {
+        $push: {
+          notifications: {
+            type: "comment",
+            postId: post._id,
+            userId: _id,
+          },
+        },
+      });
+    }
+
     await newReply.save();
     await post.save();
     res.status(200).json({ message: "Reply posted successfully" });
@@ -282,6 +311,16 @@ const replyOnaReply = async (req, res) => {
     });
 
     reply.replies.push(newReply);
+
+    const post = await Post.findOne({ replies: reply._id });
+    if (post) {
+      post.uniqueEngagements.push({
+        userId: req.user._id,
+        engagementType: "reply",
+      });
+      await post.save();
+    }
+
     await newReply.save();
     await reply.save();
 

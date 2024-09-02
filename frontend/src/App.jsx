@@ -12,10 +12,12 @@ import Profile from "./Pages/Profile";
 import { setPageRoute } from "./app/features/pageRouteSlice";
 import Post from "./Pages/Post";
 import Notifications from "./Pages/Notifications";
+import Analytics from "./Pages/Analytics";
 
 function App() {
   const dispatch = useDispatch();
   const loading = useSelector((state) => state.loading.isLoading);
+
   useEffect(() => {
     document.documentElement.classList.toggle(
       "dark",
@@ -73,6 +75,7 @@ function App() {
               <Route path="/:username" element={<Profile />} />
               <Route path="/:username/:postID" element={<Post />} />
               <Route path="/notifications" element={<Notifications />} />
+              <Route path="/analytics" element={<Analytics />} />
             </Routes>
           </div>
         </div>

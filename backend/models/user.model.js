@@ -1,5 +1,34 @@
 const mongoose = require("mongoose");
 
+const notificationSchema = new mongoose.Schema(
+  {
+    type: {
+      type: String,
+      enum: ["like", "comment", "follow"],
+      required: true,
+    },
+    postId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+      required: function () {
+        return this.type !== "follow";
+      },
+    },
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    read: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
 const userSchema = new mongoose.Schema(
   {
     firstName: {
@@ -39,6 +68,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    notifications: [notificationSchema],
   },
   {
     timestamps: true,

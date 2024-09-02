@@ -5,6 +5,7 @@ import copy from "copy-to-clipboard";
 import { useSelector } from "react-redux";
 import axios from "axios";
 import { IoSettingsOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 const UserHeader = ({
   userProfile,

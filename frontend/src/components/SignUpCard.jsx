@@ -56,7 +56,7 @@ const SignUpCard = () => {
 
   return (
     <div className="flex flex-col justify-center items-center align-middle p-2">
-      <h1 className="md:text-4xl text-3xl font-extrabold md:mb-10 mb-5">
+      <h1 className="md:text-4xl text-3xl font-extrabold md:mb-10 mb-5 mt-20">
         Sign up
       </h1>
       <form

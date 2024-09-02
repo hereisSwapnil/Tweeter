@@ -51,6 +51,36 @@ const UserDetailedPost = ({ post, userProfile }) => {
     const displayedImages = post.images.slice(0, 4);
     const extraImagesCount = post.images.length - 4;
 
+    if (post.images.length === 1) {
+      return (
+        <Gallery id="my-gallery">
+          <div className="relative flex items-center justify-center align-middle">
+            <Item
+              original={post.images[0].url}
+              thumbnail={post.images[0].url}
+              className="border-0 cursor-pointer rounded-lg object-cover w-auto h-full"
+              width={"auto"}
+              height={"auto"}
+              style={{
+                width: "100%", // Adjust as needed
+                height: "auto", // Adjust as needed
+              }}
+            >
+              {({ ref, open }) => (
+                <img
+                  ref={ref}
+                  onClick={open}
+                  src={post.images[0].url}
+                  alt=""
+                  className="border-0 cursor-pointer rounded-lg w-full h-[200px] object-cover"
+                />
+              )}
+            </Item>
+          </div>
+        </Gallery>
+      );
+    }
+
     return (
       <Gallery id="my-gallery">
         <div className="relative grid grid-cols-2 gap-2">
@@ -146,7 +176,17 @@ const UserDetailedPost = ({ post, userProfile }) => {
         <Link to={`/${post.postedBy.username}/${post._id}`}>
           <p className="mt-2 font-light text-sm mb-2">{post.content}</p>
         </Link>
-        {post.images.length > 0 ? renderImages() : null}
+        {post.images.length > 1 ? (
+          renderImages()
+        ) : (
+          <Link to={`/${post.postedBy.username}/${post._id}`}>
+            <img
+              className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2 object-cover"
+              src={post?.images[0]?.url}
+              alt=""
+            />
+          </Link>
+        )}
         <div className="hidden md:flex">
           <PostAction
             liked={liked}

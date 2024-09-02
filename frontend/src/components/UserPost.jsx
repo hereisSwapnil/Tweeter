@@ -128,7 +128,17 @@ const UserPost = ({ post, isCommentVisible }) => {
         </div>
         <Link to={`/${post.postedBy.username}/${post._id}`}>
           <p className="mt-2 font-light text-sm">{post.content}</p>
-          {post.images.length > 0 ? renderImages() : null}
+          {post.images.length > 1 ? (
+            renderImages()
+          ) : (
+            <Link to={`/${post.postedBy.username}/${post._id}`}>
+              <img
+                className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2 object-cover"
+                src={post?.images[0]?.url}
+                alt=""
+              />
+            </Link>
+          )}
         </Link>
         <div className="hidden md:flex">
           <PostAction

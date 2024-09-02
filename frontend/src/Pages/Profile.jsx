@@ -117,6 +117,11 @@ const Profile = () => {
               userProfile={userProfile}
             />
           ))}
+          {userPosts.length === 0 && (
+            <p className="text-center text-lg font-semibold mt-20 text-[#c4c1c1]">
+              No posts to show
+            </p>
+          )}
           {/* {userReplies.map((post, index) => (
             <UserDetailedPost key={index} post={post} />
           ))} */}

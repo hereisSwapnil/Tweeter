@@ -21,4 +21,10 @@ app.use("/api/user", userRouter);
 postRouter = require("./routes/post.routes");
 app.use("/api/post", postRouter);
 
+notificationRouter = require("./routes/notification.routes");
+app.use("/api/notifications", notificationRouter);
+
+analyticsRouter = require("./routes/analytics.routes");
+app.use("/api/analytics", analyticsRouter);
+
 module.exports = app;
