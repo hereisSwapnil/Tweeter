@@ -7,6 +7,9 @@ const createPost = async (req, res) => {
     const { content } = req.body;
     const { _id } = req.user;
     const user = await User.findById(_id);
+    if (user?.isGuest) {
+      return res.status(400).json({ message: "Guest users can't post" });
+    }
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -91,6 +94,9 @@ const likeUnlikePost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
     const { _id } = req.user;
+    if (req.user?.isGuest) {
+      return res.status(400).json({ message: "Guest users can't like" });
+    }
     if (post.likes.includes(_id)) {
       post.likes = post.likes.filter(
         (like) => like.toString() !== _id.toString()
@@ -137,6 +143,9 @@ const replyPost = async (req, res) => {
       return res.status(404).json({ message: "Post not found" });
     }
     const { _id } = req.user;
+    if (req.user?.isGuest) {
+      return res.status(400).json({ message: "Guest users can't reply" });
+    }
     const user = await User.findById(_id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -188,16 +197,30 @@ const getFeed = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized" });
     }
     const following = user.following;
-    let feed = await Post.find({ postedBy: { $in: following } })
-      .sort({ createdAt: -1 })
-      .populate("postedBy", "username name profilePicture")
-      .populate({
-        path: "replies",
-        populate: {
-          path: "repliedBy",
-          select: "username name profilePicture",
-        },
-      });
+    let feed = [];
+    if (req.user?.isGuest) {
+      feed = await Post.find({})
+        .sort({ createdAt: -1 })
+        .populate("postedBy", "username name profilePicture")
+        .populate({
+          path: "replies",
+          populate: {
+            path: "repliedBy",
+            select: "username name profilePicture",
+          },
+        });
+    } else {
+      feed = await Post.find({ postedBy: { $in: following } })
+        .sort({ createdAt: -1 })
+        .populate("postedBy", "username name profilePicture")
+        .populate({
+          path: "replies",
+          populate: {
+            path: "repliedBy",
+            select: "username name profilePicture",
+          },
+        });
+    }
     if (feed.length === 0) {
       feed = await Post.find({ postedBy: _id })
         .sort({ createdAt: -1 })
@@ -246,11 +269,14 @@ const getRepliesByUser = async (req, res) => {
   try {
     const { id } = req.params;
     const user = await User.findById(id);
+    if (user?.isGuest) {
+      return res
+        .status(400)
+        .json({ message: "Guest users can't view replies" });
+    }
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
-    console.log(id);
-    console.log(".............");
     const posts = await Post.find({}).populate("replies");
     const posts_ = posts.filter((post) => {
       return post.replies.filter((reply) => reply.repliedBy.toString() === id);
@@ -275,6 +301,9 @@ const likeUnlikeReply = async (req, res) => {
       return res.status(404).json({ message: "Reply not found" });
     }
     const { _id } = req.user;
+    if (req.user?.isGuest) {
+      return res.status(400).json({ message: "Guest users can't like" });
+    }
     if (reply.likes.includes(_id)) {
       reply.likes = reply.likes.filter(
         (like) => like.toString() !== _id.toString()
@@ -303,6 +332,10 @@ const replyOnaReply = async (req, res) => {
 
     if (!content) {
       return res.status(400).json({ message: "Content is required" });
+    }
+
+    if (req.user?.isGuest) {
+      return res.status(400).json({ message: "Guest users can't reply" });
     }
 
     const newReply = new Reply({
@@ -334,6 +367,11 @@ const replyOnaReply = async (req, res) => {
 const getRepliesOfaReply = async (req, res) => {
   try {
     const { replyId } = req.params;
+    if (req.user?.isGuest) {
+      return res
+        .status(400)
+        .json({ message: "Guest users can't view replies" });
+    }
     const reply = await Reply.findById(replyId).populate({
       path: "replies",
       populate: {

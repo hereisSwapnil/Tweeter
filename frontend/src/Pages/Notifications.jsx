@@ -16,6 +16,7 @@ const Notifications = () => {
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
+        if (user?.isGuest) return;
         const { data } = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/notifications`,
           {
@@ -37,8 +38,13 @@ const Notifications = () => {
   return (
     <div>
       <Sidebar />
-      <div className="mt-[8vh] px-2 md:px-0">
+      <div className={`mt-[8vh] px-2 md:px-0`}>
         <h1 className="text-3xl font-semibold mb-5">Notifications</h1>
+        {user?.isGuest && (
+          <p className="text-left text-gray-500">
+            Sign in to view your notifications
+          </p>
+        )}
         {notifications.slice(0, 5).map((notification) => (
           <NotificationCard
             key={notification._id}

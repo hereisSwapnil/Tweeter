@@ -60,6 +60,8 @@ const ProfileSettings = ({ userProfile, setIsSettingsOpen }) => {
       })
       .catch((err) => {
         console.error("Error updating user:", err);
+        toast.error(err.response?.data?.message || "An error occurred.");
+        setIsSettingsOpen(false);
       })
       .finally(() => {
         dispatch(setLoading(false));

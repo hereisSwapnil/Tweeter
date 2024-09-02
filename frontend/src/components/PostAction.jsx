@@ -32,6 +32,8 @@ const PostAction = ({
       }
     } catch (error) {
       console.error("Error liking/unliking:", error);
+      setLiked(false);
+      toast.error(error.response?.data?.message || "An error occurred.");
     }
   };
 

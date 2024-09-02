@@ -47,6 +47,9 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
       .catch((err) => {
         console.log(err);
         console.log(err.response?.data?.message || "An error occurred.");
+        toast.error(err.response?.data?.message || "An error occurred.");
+        dispatch(setIsReplying(false));
+        dispatch(setReplyPost(null));
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -81,6 +84,9 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
       .catch((err) => {
         console.log(err);
         console.log(err.response?.data?.message || "An error occurred.");
+        toast.error(err.response?.data?.message || "An error occurred.");
+        dispatch(setIsReplying(false));
+        dispatch(setReplyPost(null));
       })
       .finally(() => {
         dispatch(setLoading(false));

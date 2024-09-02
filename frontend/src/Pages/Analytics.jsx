@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
 import RecommendationBar from "../components/RecommendationBar";
 import axios from "axios";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoading } from "../app/features/loadingSlice";
 import { Line } from "react-chartjs-2";
 import {
@@ -28,6 +28,7 @@ ChartJS.register(
 );
 
 const Analytics = () => {
+  const { user } = useSelector((state) => state.auth);
   const dispatch = useDispatch();
   const [analytics, setAnalytics] = useState({
     postCount: 0,
@@ -39,6 +40,8 @@ const Analytics = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
+        if (user?.isGuest) return;
+
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/api/analytics`,
           {
@@ -94,6 +97,11 @@ const Analytics = () => {
       <Sidebar />
       <div className="mt-[8vh] px-2 md:px-0">
         <h1 className="text-3xl font-semibold mb-5">Analytics</h1>
+        {user?.isGuest && (
+          <p className="text-left text-gray-500 mb-5">
+            Sign in to view your analytics
+          </p>
+        )}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="p-4 border rounded-lg shadow-sm">
             <h2 className="text-xl font-semibold">Total Posts</h2>

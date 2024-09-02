@@ -9,6 +9,7 @@ const {
   getUserProfile,
   getUserFollowers,
   getUserFollowing,
+  createGuestUser,
 } = require("../controllers/user.controller");
 const protectRoute = require("../middlewares/protectRoute");
 const upload = require("../utils/multer");
@@ -16,6 +17,8 @@ const upload = require("../utils/multer");
 const router = Router();
 
 router.post("/register", register);
+
+router.post("/guestlogin", createGuestUser);
 
 router.post("/login", login);
 

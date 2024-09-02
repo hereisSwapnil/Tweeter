@@ -31,6 +31,10 @@ const notificationSchema = new mongoose.Schema(
 
 const userSchema = new mongoose.Schema(
   {
+    isGuest: {
+      type: Boolean,
+      default: false,
+    },
     firstName: {
       type: String,
       required: "First name is required",
@@ -69,6 +73,7 @@ const userSchema = new mongoose.Schema(
       default: "",
     },
     notifications: [notificationSchema],
+    expiresAfter: { type: Date },
   },
   {
     timestamps: true,

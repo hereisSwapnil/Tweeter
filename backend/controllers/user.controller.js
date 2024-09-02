@@ -3,6 +3,50 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { Mongoose, default: mongoose } = require("mongoose");
 
+const createGuestUser = async (req, res) => {
+  try {
+    let guestUsername;
+
+    // Generate a unique guest identifier
+    do {
+      guestUsername = `guest_${[1, 2, 3, 4, 5, 6, 7, 8, 9, 0]
+        .map(() => Math.floor(Math.random() * 10))
+        .join("")
+        .slice(0, 5)}`;
+    } while (await User.findOne({ username: guestUsername }));
+
+    // Create a guest user object
+    const guestUser = new User({
+      _id: new mongoose.Types.ObjectId(),
+      isGuest: true,
+      username: guestUsername,
+      email: `${guestUsername}@guest.com`,
+      firstName: "Guest",
+      lastName: "User",
+      password: await bcrypt.hash("guest_password", 10), // Dummy password
+      expiresAfter: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    });
+
+    await guestUser.save();
+
+    const token = jwt.sign({ _id: guestUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "24h",
+    });
+
+    res.cookie("token", token, { httpOnly: true, secure: true });
+
+    res.status(200).json({
+      _id: guestUser._id,
+      token,
+      username: guestUsername,
+      email: guestUser.email,
+    });
+  } catch (error) {
+    console.error(`Error during create guest user: ${error.message}`);
+    res.status(500).json({ message: error.message });
+  }
+};
+
 const getUserProfile = async (req, res) => {
   try {
     const { username } = req.params;
@@ -115,6 +159,9 @@ const followUnfollowUser = async (req, res) => {
     const { id } = req.params;
     const currentUser = req.user;
     const userToFollow = await User.findById(id);
+    if (currentUser?.isGuest) {
+      return res.status(400).json({ message: "Guest users can't follow" });
+    }
     if (id === currentUser._id) {
       return res.status(400).json({ message: "You can't follow yourself" });
     }
@@ -160,6 +207,9 @@ const updateUser = async (req, res) => {
     const { name, email, username, bio } = req.body;
     const userId = req.user._id;
     const user = await User.findById(userId);
+    if (user?.isGuest) {
+      return res.status(400).json({ message: "Guest users can't update" });
+    }
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -186,6 +236,11 @@ const getUserFollowers = async (req, res) => {
       "followers",
       "-password -__v -updatedAt -email -bio -followers -following -createdAt -firstName -lastName"
     );
+    if (user?.isGuest) {
+      return res
+        .status(400)
+        .json({ message: "Guest users can't view followers" });
+    }
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -206,6 +261,11 @@ const getUserFollowing = async (req, res) => {
       "following",
       "-password -__v -updatedAt -email -bio -followers -following -createdAt -firstName -lastName"
     );
+    if (user?.isGuest) {
+      return res
+        .status(400)
+        .json({ message: "Guest users can't view following" });
+    }
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
@@ -226,4 +286,5 @@ module.exports = {
   getUserProfile,
   getUserFollowers,
   getUserFollowing,
+  createGuestUser,
 };

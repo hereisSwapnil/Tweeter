@@ -4,6 +4,12 @@ const getNotifications = async (req, res) => {
   try {
     const userId = req.user._id;
 
+    if (req.user?.isGuest) {
+      return res
+        .status(400)
+        .json({ message: "Guest users can't view notifications" });
+    }
+
     // Fetch the user and populate notifications
     const user = await User.findById(userId)
       .sort({ "notifications.createdAt": -1 })
