@@ -1,31 +1,119 @@
 # Tweeter
 
-A social media platform where users can connect through posts with functionalities like upload, like, share, comment, and repost. Users also benefit from hourly and monthly analytics on their profiles and posts.
+A social platform built with the MERN stack that allows users to create posts, interact with others, and track engagement through detailed analytics. Users can upload posts, like, comment, share, repost, and view hourly and monthly insights on their content and profile performance.
 
-## Live Demo 🔴
+## 🚀 Features
 
-[Visit Tweeter here](https://tweeter-six-alpha.vercel.app/)
+- **Post Interactions**: Upload posts and engage with likes, comments, shares, and reposts.  
+- **Advanced Analytics**: Hourly and monthly analytics for both posts and user profiles.  
+- **Modern UI**: Clean and responsive interface built with React and TailwindCSS.  
+- **Global State Handling**: Smooth and predictable state management with Redux.  
+- **Fast Backend**: REST API built with Node and Express.  
+- **Database Storage**: MongoDB for scalable and structured data storage.
 
-## Features
+## 📸 Screenshots
 
-1. Post upload, like, share, comment, and repost functionalities
-2. Hourly and monthly analytics for users' profiles and posts
-3. Tailored user experience with ReactJS and TailwindCSS
-4. MongoDB database for efficient data storage and retrieval
-5. State management using Redux for seamless user interactions
+<!-- Add your screenshots here -->
 
-## Screenshots
+[![Clean-Shot-2025-11-25-at-01-19-28-2x.png](https://i.postimg.cc/HLB8jsWg/Clean-Shot-2025-11-25-at-01-19-28-2x.png)](https://postimg.cc/XZBYzWyH)
+[![Clean-Shot-2025-11-25-at-01-20-08-2x.png](https://i.postimg.cc/2SYxZyYz/Clean-Shot-2025-11-25-at-01-20-08-2x.png)](https://postimg.cc/gnMR9Yr5)
+[![Clean-Shot-2025-11-25-at-01-20-37-2x.png](https://i.postimg.cc/xCBvTTgH/Clean-Shot-2025-11-25-at-01-20-37-2x.png)](https://postimg.cc/CBHBc03L)
 
-![image](https://github.com/user-attachments/assets/a48b2ede-d9cf-4b68-ad3d-a7c8d8f066ea)
-![image](https://github.com/user-attachments/assets/ed198231-4c87-4852-8270-11d422474d0a)
-![image](https://github.com/user-attachments/assets/efa4ea60-3e5b-4104-882b-14bcad1b9e5b)
-![image](https://github.com/user-attachments/assets/b52e209f-8d0a-4113-814e-370864353922)
-![image](https://github.com/user-attachments/assets/d5fb9456-d3b8-443b-b6f8-3e709bf6e6af)
-![image](https://github.com/user-attachments/assets/7755a3cf-5ab6-425d-9d13-6ded3e9957ab)
+## 🎥 Demo
 
+*Click the thumbnail above once you add your video preview*
 
-## Tech Stack
+## 🛠️ Tech Stack
 
-1. **Frontend**: React.js, TailwindCSS
-2. **Backend**: Node.js, Express.js
-3. **Database**: MongoDB
+### Frontend
+- **React**: Component based UI library.  
+- **TailwindCSS**: Utility-first CSS styling.  
+- **Redux Toolkit**: Predictable global state management.  
+- **Axios**: HTTP requests.
+
+### Backend
+- **Node.js**: JavaScript runtime.  
+- **Express.js**: Minimal and fast backend framework.  
+- **MongoDB**: NoSQL database.  
+- **Mongoose**: ODM for MongoDB.
+
+## 📋 Prerequisites
+
+Before installation, ensure you have the following:
+
+- [Node.js](https://nodejs.org/)  
+- [npm](https://www.npmjs.com/)  
+- [MongoDB](https://www.mongodb.com/) (Local or Atlas)
+
+## 🔧 Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd tweeter
+   ```
+
+2. **Backend Setup**
+   ```bash
+   cd backend
+   npm install
+   ```
+
+3. **Frontend Setup**
+   ```bash
+   cd ../frontend
+   npm install
+   ```
+
+## ⚙️ Environment Variables
+
+### Backend
+
+Create a `.env` file in the `backend` folder:
+
+```env
+PORT=5000
+MONGO_URI=your_mongo_connection
+JWT_SECRET=your_jwt_secret
+ORIGIN=http://localhost:5173
+```
+
+### Frontend
+
+Create a `.env` file in the `frontend` folder:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+## 🚀 Running the App
+
+### Start Backend
+
+```bash
+cd backend
+npm run dev
+```
+Accessible at [http://localhost:5000](http://localhost:5000)
+
+### Start Frontend
+
+```bash
+cd frontend
+npm run dev
+```
+Accessible at [http://localhost:5173](http://localhost:5173)
+
+## 🤝 Contributing
+
+Contributions are welcome. To contribute:
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feature/NewFeature`)
+3. Commit changes (`git commit -m "Add NewFeature"`)
+4. Push (`git push origin feature/NewFeature`)
+5. Open a Pull Request
+
+## 📄 License
+
+This project is licensed under the MIT License.
