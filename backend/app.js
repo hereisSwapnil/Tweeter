@@ -4,12 +4,20 @@ const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const methodOverride = require("method-override");
 
+const connectDB = require("./db/index");
+
 app.use(cors({ origin: process.env.ORIGIN, credentials: true }));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(methodOverride("_method"));
+
+// Middleware to ensure DB connection
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
 
 app.get("/", (req, res) => {
   res.send("Server is running 🚀");
