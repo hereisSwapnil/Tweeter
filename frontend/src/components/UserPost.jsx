@@ -17,7 +17,9 @@ const UserPost = ({ post, isCommentVisible }) => {
   const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
 
-  const clickReplyPost = () => {
+  const clickReplyPost = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     dispatch(setReplyPost(post));
     dispatch(setIsReplying(true));
   };
@@ -27,21 +29,21 @@ const UserPost = ({ post, isCommentVisible }) => {
     const extraImagesCount = post.images.length - 4;
 
     return (
-      <div className="grid grid-cols-2 gap-2 mt-2">
+      <div className="grid grid-cols-2 gap-2 mt-3 rounded-xl overflow-hidden">
         {displayedImages.map((image, index) => (
-          <div key={index} className="relative w-full mb-2">
+          <div key={index} className="relative w-full aspect-square">
             <img
               src={image.url}
               alt={`Uploaded ${index}`}
-              className={`border-0 rounded-lg cursor-pointer w-full h-[200px] object-cover ${
+              className={`w-full h-full object-cover hover:opacity-90 transition-opacity duration-200 ${
                 extraImagesCount > 0 && index == displayedImages.length - 1
-                  ? "opacity-20"
+                  ? "opacity-50"
                   : ""
               }`}
             />
             {extraImagesCount > 0 && index == displayedImages.length - 1 && (
-              <div className="absolute top-[50%] right-[50%] z-10">
-                <span className="text-lg font-bold text-white z-30">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                <span className="text-2xl font-bold text-white">
                   +{extraImagesCount}
                 </span>
               </div>
@@ -53,133 +55,110 @@ const UserPost = ({ post, isCommentVisible }) => {
   };
 
   return (
-    <div className="flex flex-row mt-[20px] border-b-[1px] pb-12 dark:border-b-[#ffffff2a] border-b-[#0000002a] w-[95vw] md:w-auto">
-      <div
-        className={`flex flex-col justify-between items-center h-auto gap-1 ${
-          post?.replies?.length > 2 ? "" : "w-[90px]"
-        }`}
-      >
-        <Link to={`/${post.postedBy.username}`}>
-          <img
-            className="border-0 rounded-full h-[45px] w-[45px] md:h-[45px] md:w-[45px] bg-cover bg-center"
-            src={post.postedBy.profilePicture}
-            alt=""
-          />
-        </Link>
-        <div className="border-[1px] h-full border-black dark:border-white opacity-25"></div>
-        {post?.replies?.length > 2 ? (
-          <Link to={`/${post.postedBy.username}`} className="flex gap-2">
+    <div className="border-b border-light-border dark:border-dark-border hover:bg-gray-50 dark:hover:bg-white/5 transition-colors duration-200 cursor-pointer">
+      <div className="flex gap-4 p-4">
+        {/* Avatar Column */}
+        <div className="flex-shrink-0">
+          <Link to={`/${post.postedBy.username}`} onClick={(e) => e.stopPropagation()}>
             <img
-              className="border-0 rounded-full h-[25px] w-[25px] bg-cover bg-center relative left-[24px] md:left-[28px]"
-              src={post.replies[0].repliedBy.profilePicture}
-              alt=""
-            />
-            <img
-              className="border-0 rounded-full h-[25px] w-[25px] bg-cover bg-center relative left-[-23px] md:left-[-20px] bottom-[-28px]"
-              src={post.replies[1].repliedBy.profilePicture}
-              alt=""
-            />
-            <img
-              className="border-0 rounded-full h-[25px] w-[25px] bg-cover bg-center relative left-[-24px] md:left-[-20px] bottom-[-28px]"
-              src={post.replies[2].repliedBy.profilePicture}
-              alt=""
+              className="w-12 h-12 rounded-full object-cover hover:opacity-80 transition-opacity"
+              src={post.postedBy.profilePicture}
+              alt={post.postedBy.username}
             />
           </Link>
-        ) : (
-          <div>🤯</div>
-        )}
-      </div>
-      <div className="w-full">
-        <div className="flex flex-row justify-between align-middle items-center">
-          <Link to={`/${post.postedBy.username}`}>
-            <p className="flex flex-row items-center gap-1 font-extrabold cursor-pointer hover:underline">
-              {post.postedBy.username}
-              <span>
-                <MdVerified color="#0096FF" />
+        </div>
+
+        {/* Content Column */}
+        <div className="flex-grow min-w-0">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-1">
+            <div className="flex items-center gap-2 text-sm group">
+              <Link 
+                to={`/${post.postedBy.username}`} 
+                className="font-bold text-black dark:text-white hover:underline truncate"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {post.postedBy.firstName} {post.postedBy.lastName}
+              </Link>
+              {post.postedBy.isVerified && <MdVerified className="text-primary-500" />}
+              <span className="text-gray-500 dark:text-gray-400 truncate">@{post.postedBy.username}</span>
+              <span className="text-gray-500 dark:text-gray-400">·</span>
+              <span className="text-gray-500 dark:text-gray-400 hover:underline">
+                {convertPostDate(post.createdAt)}
               </span>
-            </p>
-          </Link>
-          <div className="flex relative flex-row gap-4 mt-3 font-thin text-[15px] items-center">
-            <p className="opacity-75">{convertPostDate(post.createdAt)}</p>
-            <BsThreeDots
-              className="relative flex opacity-75 cursor-pointer"
-              onClick={() => setIsShareMenuOpen(!isShareMenuOpen)}
-            />
-            <div
-              onClick={() => {
-                copy(
-                  `${window.location.origin}/${post.postedBy.username}/${post._id}`
-                );
-                setIsCopied(true);
-                setTimeout(() => {
-                  setIsShareMenuOpen(false);
-                  setIsCopied(false);
-                }, 1000);
-              }}
-              className={`absolute z-10 md:text-md text-sm select-none ${
-                isShareMenuOpen ? "" : "hidden"
-              } cursor-pointer ${
-                isCopied ? "bg-opacity-45 border-none animate-ping" : ""
-              } dark:hover:bg-gray-950 text-center dark:hover:border-gray-800 bg-[#e3e3e3] hover:bg-[#cfcfcf] top-8 right-0 w-[100px] dark:bg-gray-900 dark:border-gray-700 border-[1px] px-[8px] py-[8px] md:px-[8px] md:py-[8px] rounded-lg`}
-            >
-              {isCopied ? "Copied" : "Copy Link"}
+            </div>
+            
+            <div className="relative">
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsShareMenuOpen(!isShareMenuOpen);
+                }}
+                className="p-2 -mr-2 text-gray-500 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-full transition-colors"
+              >
+                <BsThreeDots />
+              </button>
+              
+              {isShareMenuOpen && (
+                <div className="absolute right-0 top-8 z-20 w-32 bg-white dark:bg-black border border-light-border dark:border-dark-border rounded-xl shadow-xl py-1 overflow-hidden">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copy(`${window.location.origin}/${post.postedBy.username}/${post._id}`);
+                      setIsCopied(true);
+                      setTimeout(() => {
+                        setIsShareMenuOpen(false);
+                        setIsCopied(false);
+                      }, 1000);
+                    }}
+                    className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    {isCopied ? "Copied!" : "Copy Link"}
+                  </button>
+                </div>
+              )}
             </div>
           </div>
-        </div>
-        <Link to={`/${post.postedBy.username}/${post._id}`}>
-          <p className="mt-2 font-light text-sm">{post.content}</p>
-          {post.images.length > 1 ? (
-            renderImages()
-          ) : (
-            <Link to={`/${post.postedBy.username}/${post._id}`}>
-              <img
-                className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2 object-cover"
-                src={post?.images[0]?.url}
-                alt=""
-              />
-            </Link>
-          )}
-        </Link>
-        <div className="hidden md:flex">
-          <PostAction
-            id={post._id}
-            liked={liked}
-            setLiked={setLiked}
-            isLiking={isLiking}
-            setIsLiking={setIsLiking}
-            size={35}
-            clickReplyPost={clickReplyPost}
-            isCommentVisible={isCommentVisible}
-            isPost={true}
-          />
-        </div>
-        <div className="md:hidden flex">
-          <PostAction
-            id={post._id}
-            liked={liked}
-            setLiked={setLiked}
-            isLiking={isLiking}
-            setIsLiking={setIsLiking}
-            size={30}
-            clickReplyPost={clickReplyPost}
-            isCommentVisible={isCommentVisible}
-            isPost={true}
-          />
-        </div>
-        <div className="flex flex-row mt-3 font-thin text-[15px] opacity-75 items-start">
-          <p>
-            {post?.replies?.length > 0
-              ? `${post?.replies?.length} replies`
-              : ""}
-          </p>
-          {(post.replies.length > 0 && post.likes.length) > 0 ? (
-            <p className="mx-3">-</p>
-          ) : (
-            <p></p>
-          )}
-          <p>
-            {post?.likes?.length > 0 ? `${post?.likes?.length} likes ` : ""}
-          </p>
+
+          {/* Post Content */}
+          <Link to={`/${post.postedBy.username}/${post._id}`} className="block">
+            <p className="text-black dark:text-white text-[15px] whitespace-pre-wrap mb-3">
+              {post.content}
+            </p>
+            
+            {post.images.length > 0 && (
+              <div className="mb-3">
+                {post.images.length > 1 ? (
+                  renderImages()
+                ) : (
+                  <div className="rounded-xl overflow-hidden border border-light-border dark:border-dark-border">
+                    <img
+                      className="w-full max-h-[500px] object-cover hover:opacity-95 transition-opacity"
+                      src={post.images[0].url}
+                      alt=""
+                    />
+                  </div>
+                )}
+              </div>
+            )}
+          </Link>
+
+          {/* Actions */}
+          <div className="flex justify-between max-w-md mt-1">
+            <PostAction
+              id={post._id}
+              liked={liked}
+              setLiked={setLiked}
+              isLiking={isLiking}
+              setIsLiking={setIsLiking}
+              size={20}
+              clickReplyPost={clickReplyPost}
+              isCommentVisible={isCommentVisible}
+              isPost={true}
+              replyCount={post.replies?.length}
+              likeCount={post.likes?.length}
+            />
+          </div>
         </div>
       </div>
     </div>

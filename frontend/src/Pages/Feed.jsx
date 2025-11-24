@@ -1,15 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { setPageRoute } from "../app/features/pageRouteSlice";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { setLoading } from "../app/features/loadingSlice";
 import UserPost from "../components/UserPost";
 import ReplyPopup from "../components/ReplyPopup";
 import AddPost from "../components/AddPost";
-import Sidebar from "../components/Sidebar";
-import HamburgerMenu from "../components/HamburgerMenu";
-import RecommendationBar from "../components/RecommendationBar";
 
 const Feed = () => {
   const user = useSelector((state) => state.auth.user);
@@ -41,18 +37,12 @@ const Feed = () => {
   }, [dispatch, user]);
 
   return (
-    <div className="relative flex">
-      <Sidebar />
-      <div className="flex-1">
-        <div className="pt-10">
-          {user && <AddPost />}
-          {isReplying && <ReplyPopup />}
-          {feedPost.map((post, index) => (
-            <UserPost key={index} post={post} isCommentVisible={true} />
-          ))}
-        </div>
-      </div>
-      <RecommendationBar />
+    <div className="w-full pb-20 md:pb-0">
+      {user && <AddPost />}
+      {isReplying && <ReplyPopup />}
+      {feedPost.map((post, index) => (
+        <UserPost key={index} post={post} isCommentVisible={true} />
+      ))}
     </div>
   );
 };

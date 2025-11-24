@@ -1,22 +1,16 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
-import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { setPageRoute } from "../app/features/pageRouteSlice";
-import { setLoading } from "../app/features/loadingSlice";
 
 const SignUpCard = () => {
   const [toggleType, setToggleType] = useState("password");
   const dispatch = useDispatch();
   const togglePasswordVisibility = () => {
-    if (toggleType === "password") {
-      setToggleType("text");
-    } else {
-      setToggleType("password");
-    }
+    setToggleType((prev) => (prev === "password" ? "text" : "password"));
   };
 
   const {
@@ -48,144 +42,130 @@ const SignUpCard = () => {
       });
   };
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     dispatch(setLoading(false));
-  //   }, 1000);
-  // }, []);
-
   return (
-    <div className="flex flex-col justify-center items-center align-middle p-2">
-      <h1 className="md:text-4xl text-3xl font-extrabold md:mb-10 mb-5 mt-20">
-        Sign up
-      </h1>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="border border-[#0000002a] dark:border-[#ffffff2a] p-10 rounded-lg flex flex-col gap-5 lg:w-[634px] w-[90vw]"
-      >
-        <div className="flex flex-col md:flex-row justify-between gap-5">
-          <div className="flex flex-col w-full justify-start gap-1">
-            <label htmlFor="firstname" className="md:text-md font-semibold">
-              First Name <span className="text-red-700">*</span>
+    <div className="w-full max-w-md p-8 bg-white dark:bg-black rounded-2xl shadow-xl border border-light-border dark:border-dark-border">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-black dark:text-white mb-2">
+          Create account
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          Join Tweeter today
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <div className="flex gap-4">
+          <div className="flex flex-col gap-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              First Name
             </label>
             <input
               type="text"
-              name="firstname"
-              className="md:text-md py-2 px-2 bg-transparent border border-[#0000002a] dark:border-[#ffffff2a] rounded-lg appearance-none focus:outline-none"
-              {...register("firstName", { required: "This field is required" })}
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              placeholder="First"
+              {...register("firstName", { required: "Required" })}
             />
             {errors.firstName && (
-              <span className="text-red-600 text-sm">
+              <span className="text-red-500 text-xs">
                 {errors.firstName.message}
               </span>
             )}
           </div>
-          <div className="flex flex-col w-full justify-start gap-1">
-            <label htmlFor="lastname" className="md:text-md font-semibold">
+          <div className="flex flex-col gap-2 w-1/2">
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
               Last Name
             </label>
             <input
               type="text"
-              name="lastname"
-              className="md:text-md py-2 px-2 bg-transparent border border-[#0000002a] dark:border-[#ffffff2a] rounded-lg appearance-none focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              placeholder="Last"
               {...register("lastName")}
             />
           </div>
         </div>
-        <div className="flex flex-col justify-start gap-1">
-          <label htmlFor="username" className="md:text-md font-semibold">
-            Username <span className="text-red-700">*</span>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Username
           </label>
           <input
-            type="username"
-            name="username"
-            className="md:text-md py-2 px-2 bg-transparent border border-[#0000002a] dark:border-[#ffffff2a] rounded-lg appearance-none focus:outline-none"
-            {...register("username", { required: "This field is required" })}
+            type="text"
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+            placeholder="Choose a username"
+            {...register("username", { required: "Username is required" })}
           />
           {errors.username && (
-            <span className="text-red-600 text-sm">
+            <span className="text-red-500 text-sm">
               {errors.username.message}
             </span>
           )}
         </div>
-        <div className="flex flex-col justify-start gap-1">
-          <label htmlFor="email" className="md:text-md font-semibold">
-            Email address <span className="text-red-700">*</span>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Email
           </label>
           <input
-            name="email"
-            className="md:text-md py-2 px-2 bg-transparent border border-[#0000002a] dark:border-[#ffffff2a] rounded-lg appearance-none focus:outline-none"
+            type="email"
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+            placeholder="Enter your email"
             {...register("email", {
-              required: "This field is required",
+              required: "Email is required",
               pattern: {
                 value: /^\S+@\S+$/i,
-                message: "Please enter a valid email address",
+                message: "Invalid email address",
               },
             })}
           />
           {errors.email && (
-            <span className="text-red-600 text-sm">{errors.email.message}</span>
+            <span className="text-red-500 text-sm">
+              {errors.email.message}
+            </span>
           )}
         </div>
 
-        <div className="flex flex-col justify-start gap-1">
-          <label htmlFor="" className="md:text-md font-semibold">
-            Password <span className="text-red-700">*</span>
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Password
           </label>
-          <div className="w-full relative">
+          <div className="relative">
             <input
               type={toggleType}
-              name="password"
-              className="md:text-md w-full py-2 px-2 bg-transparent border border-[#0000002a] dark:border-[#ffffff2a] rounded-lg appearance-none focus:outline-none"
-              {...register("password", { required: "This field is required" })}
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              placeholder="Create a password"
+              {...register("password", { required: "Password is required" })}
             />
-            {errors.password && (
-              <span className="text-red-600 text-sm">
-                {errors.password.message}
-              </span>
-            )}
-            {toggleType === "password" ? (
-              <>
-                <FaEyeSlash
-                  color="white"
-                  onClick={togglePasswordVisibility}
-                  className="hidden dark:flex absolute right-[12px] top-[12px] text-[#0000002a] cursor-pointer"
-                />
-                <FaEyeSlash
-                  color="black"
-                  onClick={togglePasswordVisibility}
-                  className="dark:hidden flex absolute right-[12px] top-[12px] text-[#0000002a] cursor-pointer"
-                />
-              </>
-            ) : (
-              <>
-                <FaEye
-                  color="white"
-                  onClick={togglePasswordVisibility}
-                  className="hidden dark:flex absolute right-[12px] top-[12px] text-[#0000002a] cursor-pointer"
-                />
-                <FaEye
-                  color="black"
-                  onClick={togglePasswordVisibility}
-                  className="dark:hidden flex absolute right-[12px] top-[12px] text-[#0000002a] cursor-pointer"
-                />
-              </>
-            )}
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              {toggleType === "password" ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
+          {errors.password && (
+            <span className="text-red-500 text-sm">
+              {errors.password.message}
+            </span>
+          )}
         </div>
-        <button className="text-lg mt-5 dark:hover:bg-[#ffffff30] hover:bg-[#00000030] dark:text-white text-black dark:bg-[#ffffff1c] bg-[#0000001c] py-3 w-full rounded-lg">
-          Sign up
+
+        <button
+          type="submit"
+          className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-primary-500/30 mt-2"
+        >
+          Create Account
         </button>
-        <p className="text-sm flex flex-row gap-1">
-          Already a user?{" "}
-          <span
-            onClick={() => {
-              dispatch(setPageRoute("login"));
-            }}
-            className="text-blue-500 font-semibold hover:underline cursor-pointer"
+
+        <p className="text-center text-sm text-gray-500 mt-4">
+          Already have an account?{" "}
+          <button
+            type="button"
+            onClick={() => dispatch(setPageRoute("login"))}
+            className="text-primary-500 font-semibold hover:underline"
           >
-            Login
-          </span>
+            Log in
+          </button>
         </p>
       </form>
     </div>

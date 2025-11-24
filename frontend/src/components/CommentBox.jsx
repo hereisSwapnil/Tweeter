@@ -9,8 +9,9 @@ import {
   setReplyPost,
   setReplyReply,
 } from "../app/features/replySlice";
+import { IoSend } from "react-icons/io5";
 
-const CommentBox = ({ placeholder, postID, replyID }) => {
+const CommentBox = ({ placeholder, postID, replyID, onSuccess }) => {
   const user = useSelector((state) => state.auth.user);
   const {
     register,
@@ -22,6 +23,19 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
   const dispatch = useDispatch();
 
   const { replyPost, replyReply } = useSelector((state) => state.reply);
+
+  const handleSuccess = () => {
+    reset();
+    if (onSuccess) {
+      onSuccess();
+    } else {
+      // Default behavior if no onSuccess provided (e.g., inline comments)
+      dispatch(setIsReplying(false));
+      dispatch(setReplyPost(null));
+      dispatch(setReplyReply(null));
+    }
+    toast.success("Replied successfully");
+  };
 
   const replyaPost = (data) => {
     if (!user) {
@@ -36,20 +50,13 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
         },
       })
       .then((res) => {
-        console.log(res.data);
         if (res.data.message === "Reply posted successfully") {
-          reset();
-          dispatch(setIsReplying(false));
-          dispatch(setReplyPost(null));
-          toast.success("Replied successfully");
+          handleSuccess();
         }
       })
       .catch((err) => {
         console.log(err);
-        console.log(err.response?.data?.message || "An error occurred.");
         toast.error(err.response?.data?.message || "An error occurred.");
-        dispatch(setIsReplying(false));
-        dispatch(setReplyPost(null));
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -73,20 +80,13 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
         }
       )
       .then((res) => {
-        console.log(res.data);
         if (res.data.message === "Reply posted successfully") {
-          reset();
-          dispatch(setIsReplying(false));
-          dispatch(setReplyReply(null));
-          toast.success("Replied successfully");
+          handleSuccess();
         }
       })
       .catch((err) => {
         console.log(err);
-        console.log(err.response?.data?.message || "An error occurred.");
         toast.error(err.response?.data?.message || "An error occurred.");
-        dispatch(setIsReplying(false));
-        dispatch(setReplyPost(null));
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -106,17 +106,13 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
         },
       })
       .then((res) => {
-        console.log(res.data);
         if (res.data.message === "Reply posted successfully") {
-          reset();
-          dispatch(setIsReplying(false));
-          dispatch(setReplyReply(null));
-          toast.success("Replied successfully");
+          handleSuccess();
         }
       })
       .catch((err) => {
         console.log(err);
-        console.log(err.response?.data?.message || "An error occurred.");
+        toast.error(err.response?.data?.message || "An error occurred.");
       })
       .finally(() => {
         dispatch(setLoading(false));
@@ -132,27 +128,25 @@ const CommentBox = ({ placeholder, postID, replyID }) => {
           ? handleSubmit(replyaReply)
           : handleSubmit(handleDirectReply)
       }
-      className="flex flex-row py-3 border-b-[1px] border-t-[1px] gap-4 justify-between md:text-md text-sm dark:border-b-[#ffffff2a] border-b-[#0000002a] dark:border-t-[#ffffff2a] border-t-[#0000002a] align-middle items-center"
+      className="flex items-center gap-3 w-full"
     >
-      <div className="flex flex-row w-full gap-4">
-        <label htmlFor="comment">👋</label>
+      <div className="relative flex-grow">
         <input
           type="text"
-          name="comment"
-          className="w-full appearance-none border-none bg-transparent focus:outline-0"
+          className="w-full bg-gray-100 dark:bg-gray-900 border-none rounded-full py-3 px-4 pr-12 focus:ring-2 focus:ring-primary-500 focus:outline-none transition-all"
           placeholder={placeholder}
           {...register("content", { required: "Reply cannot be empty" })}
         />
-        {errors.content && (
-          <span className="text-red-600 text-sm">{errors.content.message}</span>
-        )}
+        <button
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-2 text-primary-500 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-full transition-colors"
+          type="submit"
+        >
+          <IoSend size={20} />
+        </button>
       </div>
-      <button
-        className="dark:bg-[#ffffff1c] md:text-md text-sm bg-[#0000001c] hover:bg-[#00000030] dark:hover:bg-[#ffffff30] px-3 py-2 rounded-lg cursor-pointer"
-        type="submit"
-      >
-        Send
-      </button>
+      {errors.content && (
+        <span className="text-red-500 text-xs absolute -bottom-5 left-4">{errors.content.message}</span>
+      )}
     </form>
   );
 };

@@ -9,185 +9,98 @@ import {
   setReplyPost,
   setReplyReply,
 } from "../app/features/replySlice";
+import { IoClose } from "react-icons/io5";
 
 const ReplyPopup = () => {
   const dispatch = useDispatch();
   const { replyPost } = useSelector((state) => state.reply);
   const { replyReply } = useSelector((state) => state.reply);
 
-  if (replyPost) {
-    return (
-      <div
-        className={`absolute flex h-full w-[100vw] md:w-auto left-0 md:left-[-5vw] bg-[#ffffff9c] dark:bg-[#0000009c] justify-center overflow-y-hidden`}
-        onClick={() => {
-          dispatch(setIsReplying(false));
-          dispatch(setReplyPost(null));
-        }}
-        style={{ top: `${window.scrollY}px` }}
-      >
-        <div
-          className="bg-white dark:bg-black h-fit shadow-xl !opacity-100 z-10 flex flex-row mt-[80px] p-3 rounded-lg border-[1px] pt-7 pb-10 px-5 dark:border-[#ffffff2a] border-[#0000002a] w-[95vw] md:w-[800px]"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <div
-            className={`flex-col justify-between items-center h-auto gap-1 hidden md:flex ${
-              replyPost?.replies?.length > 2 ? "" : "w-[90px]"
-            }`}
-          >
-            <Link to={`/${replyPost.postedBy.username}`}>
-              <img
-                className="border-0 rounded-full h-[45px] w-[45px] md:h-[45px] md:w-[45px] bg-cover bg-center"
-                src={replyPost?.postedBy.profilePicture}
-                alt=""
-              />
-            </Link>
-            <div className="border-[1px] h-full border-black dark:border-white opacity-25"></div>
-            {replyPost?.replies?.length > 2 ? (
-              <div to={"/"} className="flex gap-2">
-                <img
-                  className="border-0 rounded-full h-[25px] w-[25px] bg-cover bg-center relative left-[24px] md:left-[28px]"
-                  src={replyPost?.replies[0].repliedBy.profilePicture}
-                  alt=""
-                />
-                <img
-                  className="border-0 rounded-full h-[25px] w-[25px] bg-cover bg-center relative left-[-23px] md:left-[-20px] bottom-[-28px]"
-                  src={replyPost?.replies[1].repliedBy.profilePicture}
-                  alt=""
-                />
-                <img
-                  className="border-0 rounded-full h-[25px] w-[25px] bg-cover bg-center relative left-[-24px] md:left-[-20px] bottom-[-28px]"
-                  src={replyPost?.replies[2].repliedBy.profilePicture}
-                  alt=""
-                />
-              </div>
-            ) : (
-              <div>🤯</div>
-            )}
-          </div>
-          <div className="w-full">
-            <div className="flex flex-row justify-between align-middle items-center mb-5">
-              <div>
-                <img
-                  className="border-0 rounded-full h-[35px] md:hidden w-[35px] md:h-[45px] md:w-[45px] bg-cover bg-center"
-                  src={replyPost?.postedBy.profilePicture}
-                  alt=""
-                />
-                <div>
-                  <div className="flex flex-row items-center gap-1 font-extrabold cursor-pointer hover:underline">
-                    <Link to={`/${replyPost?.postedBy.username}`}>
-                      {replyPost?.postedBy.username}
-                    </Link>
-                    <span>
-                      <MdVerified color="#0096FF" />
-                    </span>
-                  </div>
-                  <div className="text-xs md:text-sm">
-                    Replying to{" "}
-                    <Link
-                      to={`/${replyPost?.postedBy.username}`}
-                      className="text-blue-600"
-                    >
-                      @{replyPost?.postedBy.username}
-                    </Link>
-                  </div>
-                </div>
-              </div>
+  const closePopup = () => {
+    dispatch(setIsReplying(false));
+    dispatch(setReplyPost(null));
+    dispatch(setReplyReply(null));
+  };
 
-              <div className="flex flex-row gap-4 mt-3 font-thin text-[15px] opacity-75 items-center">
-                <p>1d</p>
-                <BsThreeDots />
-              </div>
-            </div>
-            <p className="mt-2 font-light text-sm md:mb-20 mb-8">
-              {replyPost?.content}
-            </p>
-            <CommentBox placeholder="Send a reply..." postID={replyPost?._id} />
-          </div>
+  if (!replyPost && !replyReply) return null;
+
+  const activeReply = replyPost || replyReply;
+  const isReplyToReply = !!replyReply;
+  const profilePicture = isReplyToReply
+    ? activeReply?.repliedBy?.profilePicture
+    : activeReply?.postedBy?.profilePicture;
+  const username = isReplyToReply
+    ? activeReply?.repliedBy?.username
+    : activeReply?.postedBy?.username;
+  const content = activeReply?.content;
+  const replyID = isReplyToReply ? activeReply?._id : null;
+  const postID = isReplyToReply ? null : activeReply?._id;
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+      onClick={closePopup}
+    >
+      <div
+        className="bg-white dark:bg-black w-full max-w-2xl rounded-2xl shadow-2xl border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col max-h-[90vh]"
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 dark:border-gray-800">
+          <button
+            onClick={closePopup}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-900 rounded-full transition-colors"
+          >
+            <IoClose size={24} />
+          </button>
+          <span className="font-bold text-lg">Reply</span>
+          <div className="w-10"></div> {/* Spacer for centering */}
         </div>
-      </div>
-    );
-  }
 
-  if (replyReply) {
-    return (
-      <div
-        className={`absolute left-0 flex h-[100vh] w-[100vw] bg-[#ffffff9c] dark:bg-[#0000009c] justify-center overflow-y-hidden`}
-        onClick={() => {
-          dispatch(setIsReplying(false));
-          dispatch(setReplyReply(null));
-        }}
-        style={{ top: `${window.scrollY}px` }}
-      >
-        <div
-          className="bg-white dark:bg-black h-fit shadow-xl !opacity-100 z-10 flex flex-row mt-[80px] p-3 rounded-lg border-[1px] pt-7 pb-10 px-5 dark:border-[#ffffff2a] border-[#0000002a] w-[95vw] md:w-[800px]"
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <div
-            className={`flex-col justify-between items-center h-auto gap-1 hidden md:flex ${
-              replyReply?.replies?.length > 2 ? "" : "w-[90px]"
-            }`}
-          >
-            <Link to={`/${replyReply?.repliedBy.username}`}>
+        {/* Content */}
+        <div className="p-4 overflow-y-auto">
+          <div className="flex gap-4">
+            <div className="flex flex-col items-center">
               <img
-                className="border-0 rounded-full h-[45px] w-[45px] md:h-[45px] md:w-[45px] bg-cover bg-center"
-                src={replyReply?.repliedBy.profilePicture}
-                alt=""
+                src={profilePicture}
+                alt={username}
+                className="w-12 h-12 rounded-full object-cover"
               />
-            </Link>
-            <div className="border-[1px] h-full border-black dark:border-white"></div>
-          </div>
-          <div className="w-full">
-            <div className="flex flex-row justify-between align-middle items-center mb-5">
-              <Link
-                to={`/${replyReply?.repliedBy.username}`}
-                className="flex flex-row gap-2 md:flex-col md:gap-0"
-              >
-                <img
-                  className="border-0 rounded-full h-[35px] md:hidden w-[35px] md:h-[45px] md:w-[45px] bg-cover bg-center"
-                  src={replyReply?.repliedBy.profilePicture}
-                  alt=""
-                />
-                <div>
-                  <p className="flex flex-row items-center gap-1 font-extrabold cursor-pointer hover:underline">
-                    {replyReply?.repliedBy.username}
-                    <span>
-                      <MdVerified color="#0096FF" />
-                    </span>
-                  </p>
-                  <p className="text-xs md:text-sm">
-                    Replying to{" "}
-                    <Link
-                      to={`/${replyReply?.repliedBy.username}`}
-                      className="text-blue-600"
-                    >
-                      @{replyReply?.repliedBy.username}
-                    </Link>
-                  </p>
-                </div>
-              </Link>
-              <div className="flex flex-row gap-4 mt-3 font-thin text-[15px] opacity-75 items-center">
-                <p>1d</p>
-                <BsThreeDots />
-              </div>
+              <div className="w-0.5 flex-grow bg-gray-200 dark:bg-gray-800 my-2"></div>
             </div>
-            <Link>
-              <p className="mt-2 font-light text-sm md:mb-20 mb-8">
-                {replyReply?.content}
+            
+            <div className="flex-1 pb-8">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="font-bold">{username}</span>
+                <MdVerified className="text-blue-500" />
+                <span className="text-gray-500 text-sm">1d</span>
+              </div>
+              <p className="text-gray-900 dark:text-gray-100 whitespace-pre-wrap">
+                {content}
               </p>
-            </Link>
-            <CommentBox
-              placeholder="Send a reply..."
-              replyID={replyReply?._id}
-            />
+              <div className="mt-2 text-gray-500 text-sm">
+                Replying to <span className="text-blue-500">@{username}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-4 mt-4">
+            <div className="w-12 flex-shrink-0 flex justify-center">
+               {/* Placeholder for user's avatar if we want to show it next to input */}
+            </div>
+            <div className="flex-1">
+               <CommentBox 
+                 placeholder="Post your reply" 
+                 postID={postID} 
+                 replyID={replyID}
+                 onSuccess={closePopup}
+               />
+            </div>
           </div>
         </div>
       </div>
-    );
-  }
+    </div>
+  );
 };
 
 export default ReplyPopup;

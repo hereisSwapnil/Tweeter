@@ -13,130 +13,77 @@ const NotificationCard = ({
   createdAt,
 }) => {
   const format = (details) => {
-    if (details.length > 20) {
-      return details.slice(0, 20) + "...";
+    if (details.length > 50) {
+      return details.slice(0, 50) + "...";
     } else {
       return details;
     }
   };
 
-  const isDarkMode = useSelector((state) => state.theme.isDarkMode);
+  const getIcon = () => {
+    switch (activity) {
+      case "like":
+        return <FaHeart className="text-pink-500" size={20} />;
+      case "follow":
+        return <FaUser className="text-primary-500" size={20} />;
+      case "comment":
+        return <FaComment className="text-blue-400" size={20} />;
+      default:
+        return null;
+    }
+  };
 
-  if (activity == "like") {
-    return (
+  const getMessage = () => {
+    switch (activity) {
+      case "like":
+        return "liked your post";
+      case "follow":
+        return "followed you";
+      case "comment":
+        return "commented on your post";
+      default:
+        return "";
+    }
+  };
+
+  return (
+    <Link to={`/${username}`} className="block w-full">
       <div
-        className={`flex flex-row justify-between gap-4 w-full border-b-[#ffffff30] border-b-[1px] px-3 rounded-md py-4 ${
-          !seen ? "bg-[#1e99eb5e]" : ""
+        className={`flex gap-4 p-4 border-b border-light-border dark:border-dark-border hover:bg-gray-50 dark:hover:bg-white/5 transition-colors ${
+          !seen ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
         }`}
-        style={{
-          borderBottom: "1px solid #00000030",
-        }}
       >
-        <div className="flex">
-          <div className="w-10">
-            <FaHeart color="red" size={30} />
-          </div>
-          <Link to={`/${username}`}>
-            <div className="flex flex-col gap-2">
-              <img
-                className="border-0 rounded-full h-[40px] w-[40px] md:h-auto md:w-[40px] bg-cover bg-center"
-                src={profilePicture}
-                alt=""
-              />
-              <div className="flex flex-col">
-                <p>
-                  <b>@{username}</b> liked your post
-                </p>
-                <p className="text-sm text-[#ffffff5e]">{format(details)}</p>
-              </div>
-            </div>
-          </Link>
+        <div className="w-8 flex-shrink-0 flex justify-end pt-1">
+          {getIcon()}
         </div>
-        <p className="text-sm text-[#00000030]">{convertPostDate(createdAt)}</p>
-      </div>
-    );
-  } else if (activity == "follow") {
-    return (
-      <div
-        className={`flex flex-row gap-4 justify-between w-full border-b-[#ffffff30] border-b-[1px] px-3 rounded-md py-4 ${
-          !seen ? "bg-[#1e99eb5e]" : ""
-        }`}
-        style={{
-          borderBottom: "1px solid #00000030",
-        }}
-      >
-        <div className="flex">
-          <div className="w-10">
-            <FaUser color={`${isDarkMode ? "white" : "black"}`} size={30} />
+        
+        <div className="flex-1 flex flex-col gap-1">
+          <div className="flex items-center gap-2">
+            <img
+              className="w-8 h-8 rounded-full object-cover"
+              src={profilePicture}
+              alt={username}
+            />
           </div>
-          <Link to={`/${username}`}>
-            <div className="flex flex-col gap-2">
-              <img
-                className="border-0 rounded-full h-[40px] w-[40px] md:h-auto md:w-[40px] bg-cover bg-center"
-                src={profilePicture}
-                alt=""
-              />
-              <div className="flex flex-col">
-                <p>
-                  <b>@{username}</b> followed you
-                </p>
-              </div>
-            </div>
-          </Link>
-        </div>
-        <p className="text-sm text-[#00000030]">{convertPostDate(createdAt)}</p>
-      </div>
-    );
-  } else if (activity == "comment") {
-    return (
-      <div
-        className={`flex flex-row justify-between gap-4 w-full border-b-[#ffffff30] border-b-[1px] px-3 rounded-md py-4 ${
-          !seen ? "bg-[#1e99eb5e]" : ""
-        }`}
-        style={{
-          borderBottom: "1px solid #00000030",
-        }}
-      >
-        {" "}
-        <div className="flex">
-          <div className="w-10">
-            <svg
-              className="mr-2 cursor-pointer"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 32 32"
-              id="comment"
-              height={35}
-            >
-              <path
-                fill={`${isDarkMode ? "black" : "white"}`}
-                d="m23.751 21.127.874 3.498-3.498-.875a1.006 1.006 0 0 0-.731.098A8.99 8.99 0 0 1 16 25c-4.963 0-9-4.038-9-9s4.037-9 9-9 9 4.038 9 9a8.997 8.997 0 0 1-1.151 4.395.995.995 0 0 0-.098.732z"
-              ></path>
-              <path
-                fill={`${isDarkMode ? "white" : "black"}`}
-                d="M25.784 21.017A10.992 10.992 0 0 0 27 16c0-6.065-4.935-11-11-11S5 9.935 5 16s4.935 11 11 11c1.742 0 3.468-.419 5.018-1.215l4.74 1.185a.996.996 0 0 0 .949-.263 1 1 0 0 0 .263-.95l-1.186-4.74zm-2.033.11.874 3.498-3.498-.875a1.006 1.006 0 0 0-.731.098A8.99 8.99 0 0 1 16 25c-4.963 0-9-4.038-9-9s4.037-9 9-9 9 4.038 9 9a8.997 8.997 0 0 1-1.151 4.395.995.995 0 0 0-.098.732z"
-              ></path>
-            </svg>
+          
+          <div className="text-sm">
+            <span className="font-bold hover:underline">{username}</span>{" "}
+            <span className="text-gray-600 dark:text-gray-400">{getMessage()}</span>
           </div>
-          <Link to={`/${username}`}>
-            <div className="flex flex-col gap-2">
-              <img
-                className="border-0 rounded-full h-[40px] w-[40px] md:h-auto md:w-[40px] bg-cover bg-center"
-                src={profilePicture}
-                alt=""
-              />
-              <div className="flex flex-col">
-                <p>
-                  <b>@{username}</b> commented on your post
-                </p>
-                <p className="text-sm text-[#ffffff5e]">{format(details)}</p>
-              </div>
-            </div>
-          </Link>
+
+          {details && (
+            <p className="text-gray-500 dark:text-gray-500 text-sm line-clamp-2">
+              {format(details)}
+            </p>
+          )}
+          
+          <p className="text-xs text-gray-400 dark:text-gray-600 mt-1">
+            {convertPostDate(createdAt)}
+          </p>
         </div>
-        <p className="text-sm text-[#00000030]">{convertPostDate(createdAt)}</p>
       </div>
-    );
-  }
+    </Link>
+  );
 };
 
 export default NotificationCard;

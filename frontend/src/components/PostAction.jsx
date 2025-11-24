@@ -1,6 +1,6 @@
 import React from "react";
 import { IoIosHeartEmpty, IoMdHeart } from "react-icons/io";
-import { BsSend } from "react-icons/bs";
+import { BsSend, BsChat } from "react-icons/bs";
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
@@ -18,8 +18,12 @@ const PostAction = ({
   isPost,
   isReply,
   ReplyaReply,
+  showCount = true,
+  likeCount,
+  replyCount,
 }) => {
   const user = useSelector((state) => state.auth.user);
+
   const likeUnlike = async (url) => {
     try {
       const response = await axios.get(url, {
@@ -37,7 +41,8 @@ const PostAction = ({
     }
   };
 
-  const handleLikeUnlike = () => {
+  const handleLikeUnlike = (e) => {
+    e.stopPropagation();
     if (!user) {
       toast.error("Please login to like/unlike a post.");
       return;
@@ -53,62 +58,66 @@ const PostAction = ({
     }, 500);
   };
 
-  return (
-    <div className="mt-5 flex flex-row gap-2 items-center">
-      {liked ? (
-        <IoMdHeart
-          className={`cursor-pointer ${isLiking ? "animate-ping" : ""}`}
-          color="red"
-          size={size}
-          onClick={handleLikeUnlike}
-        />
-      ) : (
-        <IoIosHeartEmpty
-          className={`cursor-pointer ${isLiking ? "animate-ping" : ""}`}
-          size={size}
-          onClick={handleLikeUnlike}
-        />
-      )}
-      {isCommentVisible && (
-        <>
-          <svg
-            className="mr-2 cursor-pointer hidden dark:flex"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 32 32"
-            id="comment"
-            height={size + 2}
-            onClick={isPost ? clickReplyPost : ReplyaReply}
-          >
-            <path
-              fill=""
-              d="m23.751 21.127.874 3.498-3.498-.875a1.006 1.006 0 0 0-.731.098A8.99 8.99 0 0 1 16 25c-4.963 0-9-4.038-9-9s4.037-9 9-9 9 4.038 9 9a8.997 8.997 0 0 1-1.151 4.395.995.995 0 0 0-.098.732z"
-            ></path>
-            <path
-              fill="#fff"
-              d="M25.784 21.017A10.992 10.992 0 0 0 27 16c0-6.065-4.935-11-11-11S5 9.935 5 16s4.935 11 11 11c1.742 0 3.468-.419 5.018-1.215l4.74 1.185a.996.996 0 0 0 .949-.263 1 1 0 0 0 .263-.95l-1.186-4.74zm-2.033.11.874 3.498-3.498-.875a1.006 1.006 0 0 0-.731.098A8.99 8.99 0 0 1 16 25c-4.963 0-9-4.038-9-9s4.037-9 9-9 9 4.038 9 9a8.997 8.997 0 0 1-1.151 4.395.995.995 0 0 0-.098.732z"
-            ></path>
-          </svg>
+  const handleReplyClick = (e) => {
+    e.stopPropagation();
+    if (isPost && clickReplyPost) {
+      clickReplyPost(e);
+    } else if (ReplyaReply) {
+      ReplyaReply(e);
+    }
+  };
 
-          <svg
-            className="mr-2 cursor-pointer dark:hidden"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 32 32"
-            id="comment"
-            height={size + 2}
-            onClick={isPost ? clickReplyPost : ReplyaReply}
+  return (
+    <div className="flex flex-row gap-6 items-center">
+      <div className="flex items-center gap-1 group">
+        <div className="p-2 rounded-full group-hover:bg-pink-50 dark:group-hover:bg-pink-900/20 transition-colors cursor-pointer" onClick={handleLikeUnlike}>
+          {liked ? (
+            <IoMdHeart
+              className={`${isLiking ? "animate-ping" : ""}`}
+              color="red"
+              size={size}
+            />
+          ) : (
+            <IoIosHeartEmpty
+              className={`text-gray-500 group-hover:text-pink-500 ${isLiking ? "animate-ping" : ""}`}
+              size={size}
+            />
+          )}
+        </div>
+        {showCount && likeCount !== undefined && (
+          <span className={`text-sm ${liked ? 'text-pink-500' : 'text-gray-500 group-hover:text-pink-500'}`}>
+            {likeCount + (liked && !isLiking ? 0 : 0)} {/* Logic to update count optimistically could be added here */}
+          </span>
+        )}
+      </div>
+
+      {isCommentVisible && (
+        <div className="flex items-center gap-1 group">
+          <div 
+            className="p-2 rounded-full group-hover:bg-blue-50 dark:group-hover:bg-blue-900/20 transition-colors cursor-pointer"
+            onClick={handleReplyClick}
           >
-            <path
-              fill="#fff"
-              d="m23.751 21.127.874 3.498-3.498-.875a1.006 1.006 0 0 0-.731.098A8.99 8.99 0 0 1 16 25c-4.963 0-9-4.038-9-9s4.037-9 9-9 9 4.038 9 9a8.997 8.997 0 0 1-1.151 4.395.995.995 0 0 0-.098.732z"
-            ></path>
-            <path
-              fill="#000000"
-              d="M25.784 21.017A10.992 10.992 0 0 0 27 16c0-6.065-4.935-11-11-11S5 9.935 5 16s4.935 11 11 11c1.742 0 3.468-.419 5.018-1.215l4.74 1.185a.996.996 0 0 0 .949-.263 1 1 0 0 0 .263-.95l-1.186-4.74zm-2.033.11.874 3.498-3.498-.875a1.006 1.006 0 0 0-.731.098A8.99 8.99 0 0 1 16 25c-4.963 0-9-4.038-9-9s4.037-9 9-9 9 4.038 9 9a8.997 8.997 0 0 1-1.151 4.395.995.995 0 0 0-.098.732z"
-            ></path>
-          </svg>
-        </>
+            <BsChat 
+              size={size - 4} 
+              className="text-gray-500 group-hover:text-blue-500"
+            />
+          </div>
+          {showCount && replyCount !== undefined && (
+            <span className="text-sm text-gray-500 group-hover:text-blue-500">
+              {replyCount}
+            </span>
+          )}
+        </div>
       )}
-      <BsSend className="cursor-pointer" size={size - 10} />
+
+      <div className="flex items-center gap-1 group">
+        <div className="p-2 rounded-full group-hover:bg-green-50 dark:group-hover:bg-green-900/20 transition-colors cursor-pointer">
+          <BsSend 
+            size={size - 4} 
+            className="text-gray-500 group-hover:text-green-500"
+          />
+        </div>
+      </div>
     </div>
   );
 };

@@ -66,105 +66,96 @@ const LoginCard = () => {
   }, [dispatch]);
 
   return (
-    <div className="flex flex-col justify-center items-center align-middle p-2">
-      <h1 className="md:text-4xl text-3xl font-extrabold md:mb-10 mb-5">
-        Log in
-      </h1>
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="border border-[#0000002a] dark:border-[#ffffff2a] p-10 rounded-lg flex flex-col gap-5 lg:w-[634px] w-[90vw]"
-      >
-        <div className="flex flex-col justify-start gap-1">
-          <label htmlFor="username" className="text-md font-semibold">
-            Username <span className="text-red-700">*</span>
+    <div className="w-full max-w-md p-8 bg-white dark:bg-black rounded-2xl shadow-xl border border-light-border dark:border-dark-border">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-black dark:text-white mb-2">
+          Welcome back
+        </h1>
+        <p className="text-gray-500 dark:text-gray-400">
+          Enter your details to sign in
+        </p>
+      </div>
+
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Username
           </label>
           <input
             type="text"
-            name="username"
-            className="text-md py-2 px-2 bg-transparent border border-[#0000002a] dark:border-[#ffffff2a] rounded-lg appearance-none focus:outline-none"
+            className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+            placeholder="Enter your username"
             {...register("username", { required: "Username is required" })}
           />
           {errors.username && (
-            <span className="text-red-600 text-sm">
+            <span className="text-red-500 text-sm">
               {errors.username.message}
             </span>
           )}
         </div>
-        <div className="flex flex-col justify-start gap-1">
-          <label htmlFor="password" className="text-md font-semibold">
-            Password <span className="text-red-700">*</span>
+
+        <div className="flex flex-col gap-2">
+          <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            Password
           </label>
-          <div className="w-full relative">
+          <div className="relative">
             <input
               type={toggleType}
-              name="password"
-              className="text-md w-full py-2 px-2 bg-transparent border border-[#0000002a] dark:border-[#ffffff2a] rounded-lg appearance-none focus:outline-none"
+              className="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none transition-all"
+              placeholder="Enter your password"
               {...register("password", { required: "Password is required" })}
             />
-            {errors.password && (
-              <span className="text-red-600 text-sm">
-                {errors.password.message}
-              </span>
-            )}
-            {toggleType === "password" ? (
-              <>
-                <FaEyeSlash
-                  color="white"
-                  onClick={togglePasswordVisibility}
-                  className="hidden dark:flex absolute right-[12px] top-[12px] text-[#0000002a] cursor-pointer"
-                />
-                <FaEyeSlash
-                  color="black"
-                  onClick={togglePasswordVisibility}
-                  className="dark:hidden flex absolute right-[12px] top-[12px] text-[#0000002a] cursor-pointer"
-                />
-              </>
-            ) : (
-              <>
-                <FaEye
-                  color="white"
-                  onClick={togglePasswordVisibility}
-                  className="hidden dark:flex absolute right-[12px] top-[12px] text-[#0000002a] cursor-pointer"
-                />
-                <FaEye
-                  color="black"
-                  onClick={togglePasswordVisibility}
-                  className="dark:hidden flex absolute right-[12px] top-[12px] text-[#0000002a] cursor-pointer"
-                />
-              </>
-            )}
+            <button
+              type="button"
+              onClick={togglePasswordVisibility}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+            >
+              {toggleType === "password" ? <FaEyeSlash /> : <FaEye />}
+            </button>
           </div>
+          {errors.password && (
+            <span className="text-red-500 text-sm">
+              {errors.password.message}
+            </span>
+          )}
         </div>
+
         <button
           type="submit"
-          className="text-lg mt-5 dark:hover:bg-[#ffffff30] hover:bg-[#00000030] dark:text-white text-black dark:bg-[#ffffff1c] bg-[#0000001c] py-3 w-full rounded-lg"
+          className="w-full py-3 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-xl transition-colors shadow-lg shadow-primary-500/30"
         >
-          Log in
+          Sign in
         </button>
 
-        <p className="text-sm flex flex-row gap-1 mt-4">
-          Don't have an account?{" "}
-          <span
-            onClick={() => {
-              dispatch(setPageRoute("signup"));
-            }}
-            className="text-blue-500 font-semibold hover:underline cursor-pointer"
-          >
-            Sign up
-          </span>
-        </p>
+        <div className="relative my-4">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200 dark:border-gray-800"></div>
+          </div>
+          <div className="relative flex justify-center text-sm">
+            <span className="px-2 bg-white dark:bg-black text-gray-500">
+              Or continue with
+            </span>
+          </div>
+        </div>
 
-        <hr className="my-4 border-t border-[#0000002a] dark:border-[#ffffff2a]" />
-        <p className="text-center text-lg my-4 font-semibold text-gray-700 dark:text-gray-300">
-          OR
-        </p>
         <button
           type="button"
           onClick={handleGuestLogin}
-          className="text-lg mt-3 dark:hover:bg-[#ffffff30] hover:bg-[#00000030] dark:text-white text-black dark:bg-[#ffffff1c] bg-[#0000001c] py-3 w-full rounded-lg"
+          className="w-full py-3 bg-gray-100 dark:bg-gray-900 hover:bg-gray-200 dark:hover:bg-gray-800 text-black dark:text-white font-semibold rounded-xl transition-colors"
         >
-          Login as Guest
+          Guest Login
         </button>
+
+        <p className="text-center text-sm text-gray-500 mt-4">
+          Don't have an account?{" "}
+          <button
+            type="button"
+            onClick={() => dispatch(setPageRoute("signup"))}
+            className="text-primary-500 font-semibold hover:underline"
+          >
+            Sign up
+          </button>
+        </p>
       </form>
     </div>
   );

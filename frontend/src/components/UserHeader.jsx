@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { PiDotsThreeCircle, PiInstagramLogoLight } from "react-icons/pi";
-import { Link, useNavigate } from "react-router-dom";
+import { PiDotsThreeCircle } from "react-icons/pi";
+import { useNavigate } from "react-router-dom";
 import copy from "copy-to-clipboard";
 import { useSelector } from "react-redux";
 import axios from "axios";
-import { IoSettingsOutline } from "react-icons/io5";
+import { IoSettingsOutline, IoCalendarOutline, IoLinkOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 
 const UserHeader = ({
@@ -32,7 +32,6 @@ const UserHeader = ({
         }
       )
       .then((res) => {
-        console.log(res.data);
         if (res.data.message === "User followed") {
           setFollowUnfollowBtnVal("Unfollow");
         } else if (res.data.message === "User unfollowed") {
@@ -40,132 +39,146 @@ const UserHeader = ({
         }
       })
       .catch((err) => {
-        console.log(err);
         toast.error(err.response?.data?.message || "An error occurred.");
         navigate("/");
       });
-    console.log(followUnfollowBtnVal);
   };
 
   return (
-    <div className="flex flex-col m-auto md:w-auto mt-10 w-[90vw]">
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-col">
-          <h1 className="md:text-4xl text-2xl font-extrabold">
-            {userProfile?.firstName + " " + userProfile?.lastName}
+    <div className="w-full">
+      {/* Cover Image Placeholder (Optional - can be added later) */}
+      <div className="h-32 md:h-48 bg-gray-200 dark:bg-gray-800 w-full relative"></div>
+
+      <div className="px-4 pb-4 relative">
+        {/* Profile Picture & Actions Row */}
+        <div className="flex justify-between items-end -mt-16 mb-4">
+          <div className="relative">
+            <img
+              className="w-32 h-32 rounded-full border-4 border-white dark:border-black object-cover bg-white dark:bg-black"
+              src={userProfile?.profilePicture}
+              alt={userProfile?.username}
+            />
+          </div>
+          
+          <div className="flex gap-2 mb-2">
+            {userProfile?._id === user?._id ? (
+              <button
+                onClick={() => setIsSettingsOpen(true)}
+                className="px-4 py-1.5 border border-gray-300 dark:border-gray-600 rounded-full font-semibold hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+              >
+                Edit profile
+              </button>
+            ) : (
+              <div className="flex gap-2">
+                <div className="relative">
+                  <button
+                    onClick={() => setIsShareMenuOpen(!isShareMenuOpen)}
+                    className="p-2 border border-gray-300 dark:border-gray-600 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                  >
+                    <PiDotsThreeCircle size={20} />
+                  </button>
+                  {isShareMenuOpen && (
+                    <div
+                      onClick={() => {
+                        copy(window.location.href);
+                        setIsCopied(true);
+                        setTimeout(() => {
+                          setIsShareMenuOpen(false);
+                          setIsCopied(false);
+                        }, 1000);
+                      }}
+                      className="absolute right-0 mt-2 w-32 bg-white dark:bg-gray-900 shadow-lg rounded-xl border border-gray-200 dark:border-gray-700 py-2 z-50 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-800 text-center text-sm font-medium"
+                    >
+                      {isCopied ? "Copied!" : "Copy Link"}
+                    </div>
+                  )}
+                </div>
+                {user && (
+                  <button
+                    onClick={() => followUnfollowUser(userProfile?._id)}
+                    className={`px-4 py-1.5 rounded-full font-bold transition-colors ${
+                      (followUnfollowBtnVal === "Unfollow" || (!followUnfollowBtnVal && userProfile?.followers.includes(user?._id)))
+                        ? "border border-gray-300 dark:border-gray-600 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-600 hover:border-red-200"
+                        : "bg-black dark:bg-white text-white dark:text-black hover:opacity-80"
+                    }`}
+                  >
+                    {followUnfollowBtnVal !== null
+                      ? followUnfollowBtnVal
+                      : userProfile?.followers.includes(user?._id)
+                      ? "Following"
+                      : "Follow"}
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* User Info */}
+        <div className="mb-4">
+          <h1 className="text-xl font-bold leading-tight">
+            {userProfile?.firstName} {userProfile?.lastName}
           </h1>
-          <p className="font-light opacity-80 md:text-md text-sm">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             @{userProfile?.username}
           </p>
-          {user && (
-            <div
-              className={`md:text-md mt-10 text-sm select-none ${
-                userProfile?._id === user?._id ? "hidden" : ""
-              }
-        cursor-pointer dark:hover:bg-gray-950 text-center dark:hover:border-gray-800 bg-[#e3e3e3] hover:bg-[#cfcfcf] h-fit w-[100px] dark:bg-gray-900 dark:border-gray-700 border-[1px] px-[8px] py-[8px] md:px-[8px] md:py-[8px] rounded-lg`}
-              onClick={() => {
-                followUnfollowUser(userProfile?._id);
-              }}
-            >
-              {followUnfollowBtnVal !== null
-                ? followUnfollowBtnVal
-                : userProfile?.followers.includes(user?._id)
-                ? "Unfollow"
-                : "Follow"}
-            </div>
-          )}
         </div>
-        <img
-          className="border-0 rounded-full md:h-[100px] md:w-[100px] h-[80px] w-[80px] bg-cover bg-center"
-          src={userProfile?.profilePicture}
-          alt=""
-        />
-      </div>
-      <p className="md:my-5 my-5 md:text-md text-sm">
-        {userProfile?.bio || (
-          <span className="opacity-50">Write something in your bio 😉</span>
-        )}
-      </p>
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-row gap-4">
-          <p
-            className="font-semibold opacity-50 md:text-md text-sm cursor-pointer hover:text-gray-500"
-            onClick={() => {
-              setIsUserListOpen(true);
-              setUserType("followers");
-            }}
-          >
-            {userProfile?.followers.length} followers
+
+        {/* Bio */}
+        {userProfile?.bio && (
+          <p className="mb-3 text-sm whitespace-pre-wrap">
+            {userProfile.bio}
           </p>
-          <p
-            className="font-semibold opacity-50 md:text-md text-sm cursor-pointer hover:text-gray-500"
+        )}
+
+        {/* Metadata (Joined Date, etc - placeholders for now) */}
+        <div className="flex items-center gap-4 text-gray-500 dark:text-gray-400 text-sm mb-3">
+          <div className="flex items-center gap-1">
+            <IoCalendarOutline />
+            <span>Joined recently</span>
+          </div>
+        </div>
+
+        {/* Follow Stats */}
+        <div className="flex gap-4 text-sm">
+          <button
             onClick={() => {
               setIsUserListOpen(true);
               setUserType("following");
             }}
+            className="hover:underline"
           >
-            {userProfile?.following.length} following
-          </p>
+            <span className="font-bold text-black dark:text-white">
+              {userProfile?.following.length}
+            </span>{" "}
+            <span className="text-gray-500 dark:text-gray-400">Following</span>
+          </button>
+          <button
+            onClick={() => {
+              setIsUserListOpen(true);
+              setUserType("followers");
+            }}
+            className="hover:underline"
+          >
+            <span className="font-bold text-black dark:text-white">
+              {userProfile?.followers.length}
+            </span>{" "}
+            <span className="text-gray-500 dark:text-gray-400">Followers</span>
+          </button>
         </div>
-        <div className="flex flex-row gap-1">
-          {userProfile?._id === user?._id ? (
-            <div>
-              <IoSettingsOutline
-                size={30}
-                cursor={"pointer"}
-                onClick={() => {
-                  setIsSettingsOpen(true);
-                }}
-                className="hidden md:flex"
-              />
-              <IoSettingsOutline
-                size={25}
-                cursor={"pointer"}
-                onClick={() => {
-                  setIsSettingsOpen(true);
-                }}
-                className="md:hidden flex"
-              />
-            </div>
-          ) : (
-            ""
-          )}
-          <div className="relative">
-            <PiDotsThreeCircle
-              size={30}
-              cursor={"pointer"}
-              className="relative hidden md:flex"
-              onClick={() => {
-                setIsShareMenuOpen(!isShareMenuOpen);
-              }}
-            />
-            <PiDotsThreeCircle
-              size={25}
-              cursor={"pointer"}
-              className="relative flex md:hidden"
-              onClick={() => {
-                setIsShareMenuOpen(!isShareMenuOpen);
-              }}
-            />
-            <div
-              onClick={() => {
-                console.log("copying");
-                copy(window.location.href);
-                setIsCopied(true);
-                setTimeout(() => {
-                  setIsShareMenuOpen(false);
-                  setIsCopied(false);
-                }, 1000);
-              }}
-              className={`absolute z-50 md:text-md text-sm select-none ${
-                isShareMenuOpen ? "" : "hidden"
-              } cursor-pointer ${
-                isCopied ? "bg-opacity-45 border-none animate-ping" : ""
-              } dark:hover:bg-gray-950 text-center dark:hover:border-gray-800 bg-[#e3e3e3] hover:bg-[#cfcfcf] top-8 right-0 w-[100px] dark:bg-gray-900 dark:border-gray-700 border-[1px] px-[8px] py-[8px] md:px-[8px] md:py-[8px] rounded-lg`}
-            >
-              {isCopied ? "Copied" : "Copy Link"}
-            </div>
-          </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-light-border dark:border-dark-border mt-2">
+        <div className="flex-1 text-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer relative py-4">
+          <span className="font-bold">Posts</span>
+          <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-14 h-1 bg-primary-500 rounded-full"></div>
+        </div>
+        <div className="flex-1 text-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer py-4 text-gray-500 dark:text-gray-400">
+          <span>Replies</span>
+        </div>
+        <div className="flex-1 text-center hover:bg-gray-50 dark:hover:bg-white/5 transition-colors cursor-pointer py-4 text-gray-500 dark:text-gray-400">
+          <span>Likes</span>
         </div>
       </div>
     </div>

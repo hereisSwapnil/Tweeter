@@ -7,8 +7,6 @@ import axios from "axios";
 import UserDetailedPost from "../components/UserDetailedPost";
 import { useNavigate, useParams } from "react-router-dom";
 import ReplyPopup from "../components/ReplyPopup";
-import RecommendationBar from "../components/RecommendationBar";
-import Sidebar from "../components/Sidebar";
 import ProfileSetting from "../components/ProfileSetting";
 import UserListPopup from "../components/UserListPopup";
 
@@ -36,18 +34,15 @@ const Profile = () => {
       })
       .then((res) => {
         setUserProfile(res.data);
-        // console.log(res.data);
       })
       .catch((err) => {
-        // console.log(err);
         toast.error(err.response?.data?.message || "An error occurred.");
         navigate("/");
       });
-  }, [dispatch, user]);
+  }, [dispatch, user, username]);
 
   useEffect(() => {
     if (userProfile) {
-      console.log(userProfile);
       axios
         .get(
           `${import.meta.env.VITE_API_URL}/api/post/user/${userProfile?._id}`,
@@ -58,9 +53,7 @@ const Profile = () => {
           }
         )
         .then((res) => {
-          console.log(res.data);
           setUserPosts(res.data);
-          // console.log(res.data);
         });
       axios
         .get(`api/post/user/replies/${userProfile?._id}`, {
@@ -81,20 +74,17 @@ const Profile = () => {
 
   if (isSettingsOpen) {
     return (
-      <div>
-        <Sidebar />
+      <div className="w-full">
         <ProfileSetting
           userProfile={userProfile}
           setIsSettingsOpen={setIsSettingsOpen}
         />
-        <RecommendationBar />
       </div>
     );
   }
 
   return (
-    <div>
-      <Sidebar />
+    <div className="w-full pb-20 md:pb-0">
       {isReplying && <ReplyPopup />}
       {isUserListOpen && (
         <UserListPopup
@@ -109,7 +99,7 @@ const Profile = () => {
         setUserType={setUserType}
       />
       {userProfile && (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col">
           {userPosts?.map((post, index) => (
             <UserDetailedPost
               key={index}
@@ -118,16 +108,13 @@ const Profile = () => {
             />
           ))}
           {userPosts.length === 0 && (
-            <p className="text-center text-lg font-semibold mt-20 text-[#c4c1c1]">
-              No posts to show
-            </p>
+            <div className="flex flex-col items-center justify-center py-20 text-gray-500 dark:text-gray-400">
+              <p className="text-lg font-semibold">No posts yet</p>
+              <p className="text-sm">When they post, it will show up here.</p>
+            </div>
           )}
-          {/* {userReplies.map((post, index) => (
-            <UserDetailedPost key={index} post={post} />
-          ))} */}
         </div>
       )}
-      <RecommendationBar />
     </div>
   );
 };

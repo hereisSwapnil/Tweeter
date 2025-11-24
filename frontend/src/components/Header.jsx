@@ -17,12 +17,6 @@ const Header = () => {
   return (
     <div className="lg:w-[600px] w-[90vw] m-auto items-center flex flex-row justify-between md:mt-10">
       <p className="md:hidden"></p>
-      <img
-        className="h-[30px] absolute right-[46vw] lg:right-[48vw]"
-        src={!isDarkMode ? "DarkLogo.svg" : "LightLogo.svg"}
-        alt=""
-        // onClick={handleToggle}
-      />
       {user ? (
         <div className="flex flex-row md:hidden gap-3 align-middle items-center">
           {loc.pathname.slice(1) === user.username ? (

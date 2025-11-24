@@ -15,7 +15,6 @@ import "photoswipe/dist/photoswipe.css";
 const UserDetailedPost = ({ post, userProfile }) => {
   const user = useSelector((state) => state.auth.user);
   const dispatch = useDispatch();
-  const [viewingImages, setViewingImages] = useState(false);
 
   const [liked, setLiked] = useState(post.likes.includes(user?._id));
   const [isLiking, setIsLiking] = useState(false);
@@ -51,59 +50,16 @@ const UserDetailedPost = ({ post, userProfile }) => {
     const displayedImages = post.images.slice(0, 4);
     const extraImagesCount = post.images.length - 4;
 
-    if (post.images.length === 1) {
-      return (
-        <Gallery id="my-gallery">
-          <div className="relative flex items-center justify-center align-middle">
-            <Item
-              original={post.images[0].url}
-              thumbnail={post.images[0].url}
-              className="border-0 cursor-pointer rounded-lg object-cover w-auto h-full"
-              width={"auto"}
-              height={"auto"}
-              style={{
-                width: "100%", // Adjust as needed
-                height: "auto", // Adjust as needed
-              }}
-            >
-              {({ ref, open }) => (
-                <img
-                  ref={ref}
-                  onClick={open}
-                  src={post.images[0].url}
-                  alt=""
-                  className="border-0 cursor-pointer rounded-lg w-full h-[200px] object-cover"
-                />
-              )}
-            </Item>
-          </div>
-        </Gallery>
-      );
-    }
-
     return (
       <Gallery id="my-gallery">
-        <div className="relative grid grid-cols-2 gap-2">
-          {post.images.map((image, index) => (
-            <div
-              key={index}
-              className="relative flex items-center justify-center align-middle"
-            >
+        <div className={`grid ${post.images.length === 1 ? 'grid-cols-1' : 'grid-cols-2'} gap-2 mt-4 mb-4 rounded-xl overflow-hidden`}>
+          {displayedImages.map((image, index) => (
+            <div key={index} className="relative w-full aspect-square">
               <Item
                 original={image.url}
                 thumbnail={image.url}
-                key={index}
-                className={`border-0 cursor-pointer rounded-lg object-cover w-auto h-full ${
-                  extraImagesCount > 0 && index == displayedImages.length - 1
-                    ? "opacity-20"
-                    : ""
-                }`}
-                width={"auto"}
-                height={"auto"}
-                style={{
-                  width: "100%", // Adjust as needed
-                  height: "auto", // Adjust as needed
-                }}
+                width="1024"
+                height="768"
               >
                 {({ ref, open }) => (
                   <img
@@ -111,18 +67,19 @@ const UserDetailedPost = ({ post, userProfile }) => {
                     onClick={open}
                     src={image.url}
                     alt=""
-                    className={`border-0 cursor-pointer rounded-lg w-full h-[200px] object-cover ${
-                      extraImagesCount > 0 &&
-                      index == displayedImages.length - 1
-                        ? "opacity-20"
+                    className={`w-full h-full object-cover cursor-pointer hover:opacity-95 transition-opacity ${
+                      extraImagesCount > 0 && index === displayedImages.length - 1
+                        ? "opacity-50"
                         : ""
-                    } ${index < 4 ? "flex" : "hidden"}`}
+                    }`}
                   />
                 )}
               </Item>
-              {extraImagesCount > 0 && index == displayedImages.length - 1 && (
-                <div className="absolute top-[50%] right-[50%] z-10">
-                  <span className="text-lg font-bold text-white z-30">
+              {extraImagesCount > 0 && index === displayedImages.length - 1 && (
+                <div 
+                  className="absolute inset-0 flex items-center justify-center bg-black/40 cursor-pointer pointer-events-none"
+                >
+                  <span className="text-2xl font-bold text-white">
                     +{extraImagesCount}
                   </span>
                 </div>
@@ -135,104 +92,94 @@ const UserDetailedPost = ({ post, userProfile }) => {
   };
 
   return (
-    <div className="flex flex-col w-[95vw] md:w-full mx-auto mb-10">
-      <div className="border-b-[1px] pb-8 dark:border-b-[#ffffff2a] border-b-[#0000002a]">
-        <div className="flex flex-row align-middle justify-between mt-10 items-center">
-          <div className="flex flex-row align-middle items-center gap-3">
+    <div className="flex flex-col w-full mx-auto mb-20">
+      <div className="border-b border-light-border dark:border-dark-border p-4">
+        {/* Header */}
+        <div className="flex justify-between items-start mb-4">
+          <div className="flex items-center gap-3">
             <Link to={`/${post.postedBy.username}`}>
               <img
-                className="border-0 rounded-full h-[45px] w-[45px] md:h-auto md:w-[45px] bg-cover bg-center"
+                className="w-12 h-12 rounded-full object-cover hover:opacity-80 transition-opacity"
                 src={post.postedBy.profilePicture}
-                alt=""
+                alt={post.postedBy.username}
               />
             </Link>
-            <Link to={`/${post.postedBy.username}`}>
-              <p className="flex flex-row items-center gap-1 font-extrabold cursor-pointer hover:underline">
-                {post.postedBy.username}
-                <span>
-                  <MdVerified color="#0096FF" />
-                </span>
-              </p>
-            </Link>
-          </div>
-          <div className="flex relative flex-row gap-4 mt-3 font-thin text-[15px] items-center">
-            <p className="opacity-75">{convertPostDate(post.createdAt)}</p>
-            <BsThreeDots
-              className="relative flex opacity-75 cursor-pointer"
-              onClick={() => setIsShareMenuOpen(!isShareMenuOpen)}
-            />
-            <div
-              className={`absolute z-10 md:text-md text-sm select-none ${
-                isShareMenuOpen ? "" : "hidden"
-              } cursor-pointer ${
-                isCopied ? "bg-opacity-45 border-none animate-ping" : ""
-              } dark:hover:bg-gray-950 text-center dark:hover:border-gray-800 bg-[#e3e3e3] hover:bg-[#cfcfcf] top-8 right-0 w-[100px] dark:bg-gray-900 dark:border-gray-700 border-[1px] px-[8px] py-[8px] md:px-[8px] md:py-[8px] rounded-lg`}
-              onClick={handleCopyLink}
-            >
-              {isCopied ? "Copied" : "Copy Link"}
+            <div className="flex flex-col">
+              <Link 
+                to={`/${post.postedBy.username}`}
+                className="font-bold text-black dark:text-white hover:underline flex items-center gap-1"
+              >
+                {post.postedBy.firstName} {post.postedBy.lastName}
+                {post.postedBy.isVerified && <MdVerified className="text-primary-500" />}
+              </Link>
+              <span className="text-gray-500 dark:text-gray-400 text-sm">@{post.postedBy.username}</span>
             </div>
           </div>
+
+          <div className="relative">
+            <button 
+              onClick={() => setIsShareMenuOpen(!isShareMenuOpen)}
+              className="p-2 -mr-2 text-gray-500 hover:text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-full transition-colors"
+            >
+              <BsThreeDots size={20} />
+            </button>
+            
+            {isShareMenuOpen && (
+              <div className="absolute right-0 top-8 z-20 w-32 bg-white dark:bg-black border border-light-border dark:border-dark-border rounded-xl shadow-xl py-1 overflow-hidden">
+                <button
+                  onClick={handleCopyLink}
+                  className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                >
+                  {isCopied ? "Copied!" : "Copy Link"}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
-        <Link to={`/${post.postedBy.username}/${post._id}`}>
-          <p className="mt-2 font-light text-sm mb-2">{post.content}</p>
-        </Link>
-        {post.images.length > 1 ? (
-          renderImages()
-        ) : (
-          <Link to={`/${post.postedBy.username}/${post._id}`}>
-            <img
-              className="border-0 max-h-[400px] rounded-lg w-full bg-cover bg-center mt-2 object-cover"
-              src={post?.images[0]?.url}
-              alt=""
-            />
-          </Link>
-        )}
-        <div className="hidden md:flex">
+
+        {/* Content */}
+        <div className="mb-4">
+          <p className="text-xl text-black dark:text-white whitespace-pre-wrap mb-4">
+            {post.content}
+          </p>
+          {post.images.length > 0 && renderImages()}
+        </div>
+
+        {/* Metadata */}
+        <div className="flex items-center gap-2 text-gray-500 dark:text-gray-400 text-sm py-4 border-y border-light-border dark:border-dark-border mb-4">
+          <span>{convertPostDate(post.createdAt)}</span>
+          <span>·</span>
+          <span className="font-bold text-black dark:text-white">{post.likes.length}</span> Likes
+          <span className="ml-2 font-bold text-black dark:text-white">{post.replies.length}</span> Replies
+        </div>
+
+        {/* Actions */}
+        <div className="flex justify-start py-2 border-b border-light-border dark:border-dark-border mb-4">
           <PostAction
             liked={liked}
             setLiked={setLiked}
             isLiking={isLiking}
             setIsLiking={setIsLiking}
-            size={35}
+            size={24}
             id={post._id}
-            isCommentVisible={false}
+            isCommentVisible={true}
             isPost={true}
+            showCount={false}
+            replyCount={post.replies.length}
+            likeCount={post.likes.length}
           />
         </div>
-        <div className="md:hidden flex">
-          <PostAction
-            liked={liked}
-            setLiked={setLiked}
-            isLiking={isLiking}
-            setIsLiking={setIsLiking}
-            size={30}
-            id={post._id}
-            isCommentVisible={false}
-            isPost={true}
-          />
-        </div>
-        <div className="flex flex-row mt-3 font-thin text-[15px] opacity-75 items-start">
-          {post.replies.length > 0 && (
-            <p>{`${post.replies.length} ${
-              post.replies.length === 1 ? "reply" : "replies"
-            }`}</p>
-          )}
-          {post.replies.length > 0 && post.likes.length > 0 && (
-            <p className="mx-3">-</p>
-          )}
-          {post.likes.length > 0 && (
-            <p>{`${post.likes.length} ${
-              post.likes.length === 1 ? "like" : "likes"
-            }`}</p>
-          )}
-        </div>
+
+        {/* Comment Box */}
+        {user && <CommentBox placeholder="Post your reply" postID={post._id} />}
       </div>
-      {user && <CommentBox placeholder="Send a reply..." postID={post._id} />}
-      <br />
-      {user &&
-        userReplies.map((reply) => (
+
+      {/* Replies */}
+      <div className="flex flex-col">
+        {userReplies.map((reply) => (
           <PostComment key={reply._id} reply={reply} />
         ))}
+      </div>
     </div>
   );
 };

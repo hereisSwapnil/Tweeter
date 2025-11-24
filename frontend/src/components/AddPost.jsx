@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { BsThreeDots } from "react-icons/bs";
 import { MdVerified } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
@@ -7,6 +6,7 @@ import { useForm } from "react-hook-form";
 import { CiImageOn } from "react-icons/ci";
 import { setLoading } from "../app/features/loadingSlice";
 import axios from "axios";
+import { IoCloseCircle } from "react-icons/io5";
 
 const AddPost = () => {
   const user = useSelector((state) => state.auth.user);
@@ -40,7 +40,6 @@ const AddPost = () => {
         },
       })
       .then((res) => {
-        console.log(res.data.message);
         if (res.data.message === "Post created successfully") {
           reset();
           setImages([]);
@@ -68,66 +67,27 @@ const AddPost = () => {
     });
   };
 
+  const removeImage = (index) => {
+    setImages((prevImages) => prevImages.filter((_, i) => i !== index));
+    setImagePaths((prevPaths) => prevPaths.filter((_, i) => i !== index));
+  };
+
   const renderImages = () => {
-    const displayedImages = imagePaths.slice(0, 4);
-    const extraImagesCount = imagePaths.length - 4;
-
-    if (imagePaths.length === 1) {
-      return (
-        <div className="flex justify-center">
-          <div className="relative w-full mb-2">
-            <img
-              src={imagePaths[0]}
-              alt="Uploaded 0"
-              className="border-0 rounded-lg w-full max-h-[400px] object-cover"
-            />
-            <span
-              onClick={() => {
-                setImages([]);
-                setImagePaths([]);
-              }}
-              className="bg-black absolute text-white font-bold text-md opacity-45 px-2.5 py-1 z-20 cursor-pointer m-1 rounded-full hover:opacity-70 top-0 right-0"
-            >
-              X
-            </span>
-          </div>
-        </div>
-      );
-    }
-
     return (
-      <div className="relative grid grid-cols-2 gap-2">
-        {displayedImages.map((imagePath, index) => (
-          <div key={index} className={`relative w-full mb-2`}>
+      <div className="grid grid-cols-2 gap-2 mt-3 mb-3">
+        {imagePaths.map((imagePath, index) => (
+          <div key={index} className="relative w-full aspect-square rounded-xl overflow-hidden group">
             <img
               src={imagePath}
               alt={`Uploaded ${index}`}
-              className={`border-0 rounded-lg cursor-pointer w-full h-[200px] object-cover ${
-                extraImagesCount > 0 && index == displayedImages.length - 1
-                  ? "opacity-20"
-                  : ""
-              }`}
+              className="w-full h-full object-cover"
             />
-            {extraImagesCount > 0 && index == displayedImages.length - 1 && (
-              <div className="absolute top-[50%] right-[50%] z-10">
-                <span className="text-lg font-bold text-white z-30">
-                  +{extraImagesCount}
-                </span>
-              </div>
-            )}
-            <span
-              onClick={() => {
-                setImages((prevImages) =>
-                  prevImages.filter((_, i) => i !== index)
-                );
-                setImagePaths((prevPaths) =>
-                  prevPaths.filter((_, i) => i !== index)
-                );
-              }}
-              className="bg-black absolute text-white font-bold text-md opacity-45 px-2.5 py-1 z-20 cursor-pointer m-1 rounded-full hover:opacity-70 top-0 right-0"
+            <button
+              onClick={() => removeImage(index)}
+              className="absolute top-2 right-2 text-white/80 hover:text-white bg-black/50 hover:bg-black/70 rounded-full p-1 transition-all"
             >
-              X
-            </span>
+              <IoCloseCircle size={24} />
+            </button>
           </div>
         ))}
       </div>
@@ -135,72 +95,59 @@ const AddPost = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-black h-fit !opacity-100 z-10 flex flex-row mt-0 p-3 rounded-lg pt-7 pb-10 px-5">
-      <div className="w-full">
-        <div className="flex flex-row justify-between align-middle items-center mb-5">
-          <Link to={"/"} className="flex flex-row gap-2">
-            <img
-              className="border-0 rounded-full h-[35px] w-[35px] md:h-[45px] md:w-[45px] bg-cover bg-center"
-              src={user?.profilePicture}
-              alt=""
-            />
-            <p className="flex flex-row items-center gap-1 font-extrabold cursor-pointer hover:underline">
-              {user.username}
-              <span>
-                <MdVerified color="#0096FF" />
-              </span>
-            </p>
-          </Link>
-          <div className="flex flex-row gap-4 mt-3 font-thin text-[15px] opacity-75 items-center">
-            <p>1d</p>
-            <BsThreeDots />
-          </div>
-        </div>
-        <Link>
-          <p className="mt-2 font-light text-sm mb-0 w-auto break-all">
-            {watch().content}
-          </p>
+    <div className="border-b border-light-border dark:border-dark-border p-4">
+      <div className="flex gap-4">
+        <Link to={`/${user.username}`} className="flex-shrink-0">
+          <img
+            className="w-12 h-12 rounded-full object-cover hover:opacity-80 transition-opacity"
+            src={user?.profilePicture}
+            alt={user.username}
+          />
         </Link>
-        {imagePaths.length > 0 && renderImages()}
-        <hr />
-        <CiImageOn
-          className="my-2 cursor-pointer"
-          size={25}
-          color="ffffff30"
-          onClick={() => document.getElementById("imageInput").click()}
-        />
-        <input
-          type="file"
-          id="imageInput"
-          accept="image/*"
-          className="hidden"
-          multiple
-          onChange={handleImageUpload}
-        />
-        <form
-          onSubmit={handleSubmit(post)}
-          className="flex flex-row py-3 border-b-[1px] border-t-[1px] gap-4 justify-between md:text-md text-sm dark:border-b-[#ffffff2a] border-b-[#0000002a] dark:border-t-[#ffffff2a] border-t-[#0000002a] align-middle items-center"
-        >
-          <div className="flex flex-row w-[80%] gap-4">
-            <label htmlFor="comment">👋</label>
-            <input
-              type="text"
-              name="comment"
-              className="w-full appearance-none border-none bg-transparent focus:outline-0"
-              placeholder="Add content..."
-              {...register("content", { required: "Content cannot be empty" })}
+        
+        <div className="flex-grow">
+          <form onSubmit={handleSubmit(post)}>
+            <textarea
+              className="w-full bg-transparent text-xl placeholder-gray-500 text-black dark:text-white border-none focus:ring-0 resize-none min-h-[100px] p-0"
+              placeholder="What is happening?!"
+              rows="3"
+              {...register("content", { required: images.length === 0 })}
             />
-          </div>
-          <button
-            className="dark:bg-[#ffffff1c] md:text-md text-sm bg-[#0000001c] hover:bg-[#00000030] dark:hover:bg-[#ffffff30] px-3 py-2 rounded-lg cursor-pointer"
-            type="submit"
-          >
-            Add Post
-          </button>
-        </form>
-        {errors.content && (
-          <span className="text-red-600 text-sm">{errors.content.message}</span>
-        )}
+            
+            {imagePaths.length > 0 && renderImages()}
+            
+            <div className="flex items-center justify-between mt-4 pt-4 border-t border-light-border dark:border-dark-border">
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("imageInput").click()}
+                  className="p-2 text-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20 rounded-full transition-colors"
+                >
+                  <CiImageOn size={24} />
+                </button>
+                <input
+                  type="file"
+                  id="imageInput"
+                  accept="image/*"
+                  className="hidden"
+                  multiple
+                  onChange={handleImageUpload}
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={!watch("content") && images.length === 0}
+                className="px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white font-bold rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                Post
+              </button>
+            </div>
+          </form>
+          {errors.content && images.length === 0 && (
+            <span className="text-red-500 text-sm mt-2 block">Please add some content or an image.</span>
+          )}
+        </div>
       </div>
     </div>
   );

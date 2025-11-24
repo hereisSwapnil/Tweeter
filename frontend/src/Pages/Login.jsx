@@ -3,7 +3,7 @@ import LoginCard from "../components/LoginCard";
 
 const Login = () => {
   return (
-    <div className="h-[80vh] w-fit overflow-hidden flex flex-row justify-center m-auto items-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-black p-4">
       <LoginCard />
     </div>
   );
